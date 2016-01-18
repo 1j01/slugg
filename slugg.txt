@@ -1,0 +1,117 @@
+
+physics
+	jumping over the fences
+		and not getting hit by things on levels above you
+		and when jumping down, almost immediately considering you "of the level below"
+		vaulting over fence animation (visual)
+	you should have a max run speed relative to your footing, not a global max x and y velocity
+	you should be pulled towards the center of a vehicle when off the edge somewhat and when not accelerating left or right
+	maybe do some flips automatically under certain conditions (visual)
+	maybe auto-jump between vehicles
+		note: you will want to go down onto empty train cars
+	clinging to ends of cars
+		holding down while going off the edge
+		jump onto the back/front if mostly stopped
+	ragdollization when hit
+
+input
+	keys for crouching and dropping
+		Shift for crouch
+		Ctrl for crouch
+		Down for which?
+		Space?
+	WASD
+	keyboard customization
+	gamepad support
+
+health and death
+
+establish scale
+	bigger vehicles relative to the size of the player
+
+environment
+	less monotonously horizontal layouts
+	sections where you can't go up
+	ladders
+	stairs
+		fire escapes (sometimes visual only?)
+	static hazards
+	health stations
+	buildings you can "enter" like a trainyard
+	visual
+		neon signs
+		wanted/warning signs
+		lampposts: everything has to be in color??
+		electrical wiring
+			(maybe with physics, only simulated when visible)
+			(moved by wind from passing vehicles)
+		pipes
+		animals?
+
+cars stop at some buildings
+	traffic ensues; can help to make the game easier
+
+trains
+	passenger trains
+		helicopter avoids shooting
+	empty cars needed to go through low clearance tunnels
+	big trains you can't jump up onto but can crouch under
+	wheel sparks (visual)
+	bullet trains (insta-kill)
+	skylines
+	SWAT trains
+		machine gun on top
+		guys come out and shoot you
+
+something that forces you down
+	like shutes and ladders! LOL
+	like a thing that lowers trains or cargo or something
+
+at the start of the game, there's one level you can drop down without dying,
+but after that you would drop to immediate death in a river of garbage
+
+storyline:
+	train crashes
+	prisoners escape (u r 1)
+	other characters with AI, a few of whom are (very) competent
+	cops show up
+	police start out non-lethal and killing civilians turns them lethal (early)
+	helicopter with gun (sorta like Hunted Forever) eventually shows up
+drone strikes
+	see target (you're a cyborg) locked on to ground where you were
+	see drone fly by in background (visual)
+snipers in background buildings
+	similar to drones but static positioning and more dynamic aiming
+an enemy that flies back and forth between the foreground and background
+	a helicopter drone?
+
+special abilities
+	energy bar
+	getting augmentation inhibitors removed
+		maybe using codes dropped from enemies
+	and/or getting new augmentations
+	/upgrades
+	super jump: higher + better wall jumping if we don't make that the default
+	maybe a grappling hook
+	maybe a force field (late game)
+	electric magnet boots for un-overshooting jumps
+	gun that can blow up cars
+
+music
+	I've got tons of musical ideas recorded over the years, but need to make some actual tracks
+	dynamic progression
+sfx
+	jumping/landing
+	cars going by with dynamic doppler effect
+
+character animations
+	standing
+	running
+	jumping
+	vaulting over fence
+	jumping down when no fence
+	ducking / crouching
+	getting hit
+		(btw - if hit in arm, it should spark)
+	wall jumping
+		(btw - when sliding down, hand could spark)
