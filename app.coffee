@@ -265,8 +265,8 @@ class Vehicle extends MobileEntity
 class Character extends MobileEntity
 	
 	frames =
-		for n in [0..5]
-			load_image "images/run/frame_#{n}.gif"
+		for n in [1..6]
+			load_image "images/run/#{n}.png"
 	
 	stand_image = load_image "images/stand.png"
 	
