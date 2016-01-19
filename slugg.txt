@@ -120,7 +120,8 @@ character animations
 	idle
 	balancing stance (wider) for when on a moving vehicle?
 	running
-	jumping (maybe rising and falling frames?)
+	jumping (maybe alternating arms)
+	falling
 	vaulting over fence
 	jumping down when no fence (maybe just use crouching animation somehow?)
 	ducking / crouching
@@ -131,3 +132,4 @@ character animations
 		(btw - when sliding down, hand could spark)
 	wall run
 	turning? skidding?
+	rolling or sliding

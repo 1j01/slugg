@@ -302,6 +302,8 @@ class Character extends MobileEntity
 			load_image "images/run/#{n}.png"
 	
 	stand_image = load_image "images/stand.png"
+	jump_image = load_image "images/jump.png"
+	wall_slide_image = load_image "images/wall-slide.png"
 	
 	limbs = [
 		{name: "head", a: "rgb(253, 31, 43)"}
@@ -337,6 +339,8 @@ class Character extends MobileEntity
 		@controller.update()
 		@descend = @controller.descend
 		@grounded = @is_grounded(world)
+		@against_wall_left = @collision(world, @x - 1, @y) and @collision(world, @x - 1, @y - @h + 5)
+		@against_wall_right = @collision(world, @x + 1, @y) and @collision(world, @x + 1, @y - @h + 5)
 		if @grounded
 			# normal movement
 			@vx += @controller.x
@@ -347,13 +351,13 @@ class Character extends MobileEntity
 			
 		else if @controller.start_jump
 			# wall jumping
-			if @collision(world, @x + 1, @y) # and collision shifted in y?
-				@vx = -@jump_velocity / (if @controller.x > 0 then 20 else 4)
+			if @against_wall_right
+				@vx = -@jump_velocity / (if @controller.x > 0 then 20 else 2)
 				#@vy -= @jump_velocity / 2 if @vy < 2
 				#@vy = max(-@jump_velocity, @vy * 1.5) if @vy < 0
 				@vy = -@jump_velocity
-			else if @collision(world, @x - 1, @y) # and collision shifted in y?
-				@vx = @jump_velocity / (if @controller.x < 0 then 20 else 4)
+			else if @against_wall_left
+				@vx = @jump_velocity / (if @controller.x < 0 then 20 else 2)
 				#@vy -= @jump_velocity / 2 if @vy < 2 # TODO: more dynamic, less conditional
 				#@vy *= 1.5 if @vy < 0
 				#@vy = max(-@jump_velocity, @vy * 1.5) if @vy < 0
@@ -363,6 +367,8 @@ class Character extends MobileEntity
 			@vx += @controller.x * @air_control
 			if @controller.extend_jump
 				@vy -= @jump_air_control_velocity
+			if @against_wall_right or @against_wall_left
+				@vy *= 0.5 if @vy > 0
 		
 		@squish += (@grounded - @squish) / 4
 		
@@ -385,7 +391,10 @@ class Character extends MobileEntity
 					frames[((@animation_time) // 60) %% 6]
 			else
 				@animation_time = 0
-				frames[3]
+				if @against_wall_right or @against_wall_left
+					wall_slide_image
+				else
+					jump_image
 		draw_height = @h * 1.6
 		ctx.drawImage image, -@w, -draw_height, draw_height, draw_height
 		ctx.restore()
