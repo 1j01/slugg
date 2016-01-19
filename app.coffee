@@ -251,7 +251,7 @@ class Character extends MobileEntity
 	
 	constructor: ->
 		@jump_velocity ?= 11
-		@air_control ?= 0.2
+		@air_control ?= 0.1
 		@jump_air_control_velocity ?= 0.35
 		@health ?= 100
 		super
