@@ -345,7 +345,7 @@ class Character extends MobileEntity
 	#constructor: ->
 		#super
 		# TODO
-		#@controller = new NeuralNetworkTrainedNonPlayerCharacterMobileEntityControlOperatorBrainObjectInstance.Thing...Idea
+		#@controller = new NeuralNetworkTrainedNonPlayerCharacterMobileEntityControlOperatorBrainObject.Instance..Thing...Idea
 
 class KeyboardController
 	constructor: ->
@@ -357,11 +357,12 @@ class KeyboardController
 			delete @keys[e.keyCode]
 	
 	update: ->
+		# arrow keys, WASD, IJKL
 		key_codes =
-			right: [39, 68] # right, D
-			left: [37, 65] # left, A
-			jump: [32, 38, 87] # space, up, W
-			descend: [40, 83] # down, S
+			right: [39, 68, 76] # right, D, L
+			left: [37, 65, 74] # left, A, J
+			jump: [38, 87, 73, 32] # up, W, I, space
+			descend: [40, 83, 75] # down, S, K
 		
 		pressed = (key)=>
 			for keyCode in key_codes[key]
@@ -454,7 +455,7 @@ animate ->
 pause = ->
 	paused = yes
 	document.body.classList.add "paused"
-	
+
 unpause = ->
 	paused = no
 	document.body.classList.remove "paused"
