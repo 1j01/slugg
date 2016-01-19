@@ -2,7 +2,7 @@
 class World
 	constructor: ->
 		@objects = []
-		@gravity = 0.7
+		@gravity = 0.8
 	
 	generate: ->
 		@objects = []
@@ -250,15 +250,16 @@ class Character extends MobileEntity
 			image
 	
 	constructor: ->
-		@jump_velocity ?= 13
+		@jump_velocity ?= 11
 		@air_control ?= 0.2
-		@invincibility = 0
-		@health = 100
+		@jump_air_control_velocity ?= 0.35
+		@health ?= 100
 		super
 		@y -= @h
+		@invincibility = 0
+		@animation_time = 0
 		@squish = 0
 		@facing = 1
-		@animation_time = 0
 	
 	step: (world)->
 		@invincibility -= 1
@@ -266,25 +267,31 @@ class Character extends MobileEntity
 		@descend = @controller.descend
 		@grounded = @is_grounded(world)
 		if @grounded
+			# normal movement
 			@vx += @controller.x
 			
-			if @controller.jump
+			# normal jumping
+			if @controller.start_jump
 				@vy = -@jump_velocity
 			
-		else if @controller.jump
+		else if @controller.start_jump
+			# wall jumping
 			if @collision(world, @x + 1, @y) # and collision shifted in y?
-				@vx = -@jump_velocity / 4
+				@vx = -@jump_velocity / (if @controller.x > 0 then 20 else 4)
 				#@vy -= @jump_velocity / 2 if @vy < 2
 				#@vy = max(-@jump_velocity, @vy * 1.5) if @vy < 0
-				@vy = -@jump_velocity if @vy < 2
+				@vy = -@jump_velocity
 			else if @collision(world, @x - 1, @y) # and collision shifted in y?
-				@vx = @jump_velocity / 4
+				@vx = @jump_velocity / (if @controller.x < 0 then 20 else 4)
 				#@vy -= @jump_velocity / 2 if @vy < 2 # TODO: more dynamic, less conditional
 				#@vy *= 1.5 if @vy < 0
 				#@vy = max(-@jump_velocity, @vy * 1.5) if @vy < 0
-				@vy = -@jump_velocity if @vy < 2
+				@vy = -@jump_velocity
 		else
+			# air control
 			@vx += @controller.x * @air_control
+			if @controller.extend_jump
+				@vy -= @jump_air_control_velocity
 		
 		@squish += (@grounded - @squish) / 4
 		
@@ -334,9 +341,9 @@ class KeyboardController
 			@keys[keyCode]? and not @prev_keys[keyCode]?
 		
 		@x = pressed(39) - pressed(37) # right minus left
-		@jump = just_pressed(32) or just_pressed(38) # space or up
+		@start_jump = just_pressed(32) or just_pressed(38) # space or up
+		@extend_jump = pressed(32) or pressed(38) # space or up
 		@descend = just_pressed(40) # down
-		# consider having a sort of "queue" of "descensions" (that timeout eventually) so you can double-tap down to go down twice
 		
 		delete @prev_keys[k] for k, v of @prev_keys
 		@prev_keys[k] = v for k, v of @keys

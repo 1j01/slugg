@@ -1,6 +1,5 @@
 
 physics
-	player jump height control
 	jumping over the fences
 		and not getting hit by things on levels above you
 		and when jumping down, almost immediately considering you "of the level below"
@@ -8,9 +7,11 @@ physics
 	you should have a max run speed relative to your footing, not a global max x and y velocity
 	you should be pulled towards the center of a vehicle when off the edge somewhat and when not accelerating left or right
 	fix slowly sliding backwards when on a vehicle
-	make wall jumping less annoying
-	maybe maximize x velocity when jumping and holding left or right
+	wall run
+	maybe maximize x velocity when jumping and holding left or right?
+	maybe have a sort of "queue" of "descensions" (that timeout eventually) so you can double-tap down to go down twice?
 	maybe do some flips automatically under certain conditions (visual)
+	or do flips when you press up while in the air
 	maybe auto-jump between vehicles
 		note: you will want to go down onto empty train cars
 	clinging to ends of cars
@@ -119,4 +120,5 @@ character animations
 		(btw - if hit in arm, it should spark)
 	wall jumping
 		(btw - when sliding down, hand could spark)
+	wall run
 	turning? skidding?
