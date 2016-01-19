@@ -1,4 +1,19 @@
 
+images_to_load = 0
+images_loaded = 0
+loading = no
+load_image = (src)->
+	images_to_load += 1
+	image = new Image
+	image.addEventListener "load", (e)->
+		images_loaded += 1
+		if images_loaded is images_to_load
+			loading = no
+	image.src = src
+	loading = yes
+	image
+	
+
 class World
 	constructor: ->
 		@objects = []
@@ -10,7 +25,7 @@ class World
 		y = 0
 		last_was_pathway = yes
 		while y > -1800
-			y -= 32 * ~~(random()*4 + 3)
+			y -= 32 * ~~(random()*(if last_was_pathway then 2 else 4) + 3)
 			if random() < 0.2 and not last_was_pathway
 				@objects.push(new Pathway({y}))
 				last_was_pathway = yes
@@ -251,12 +266,9 @@ class Character extends MobileEntity
 	
 	frames =
 		for n in [0..5]
-			image = new Image
-			image.src = "images/run/frame_#{n}.gif"
-			image
+			load_image "images/run/frame_#{n}.gif"
 	
-	stand_image = new Image
-	stand_image.src = "images/stand.png"
+	stand_image = load_image "images/stand.png"
 	
 	constructor: ->
 		@jump_velocity ?= 11
@@ -308,7 +320,7 @@ class Character extends MobileEntity
 	
 	draw: (ctx, view)->
 		# return if (@x > view.cx + view.width/2) or (@y > view.cy + view.height/2) or (@x + @w < view.cx - view.width/2) or (@y + @h < view.cy - view.height/2)
-		# FIXME: when you jump off of a train backwards you're sprite flips because of the velocity added to vx
+		# FIXME: when you jump off of a train backwards your sprite flips because of the velocity added to vx
 		@facing = +1 if @vx > 0
 		@facing = -1 if @vx < 0
 		ctx.save()
@@ -345,15 +357,25 @@ class KeyboardController
 			delete @keys[e.keyCode]
 	
 	update: ->
-		pressed = (keyCode)=>
-			@keys[keyCode]?
-		just_pressed = (keyCode)=>
-			@keys[keyCode]? and not @prev_keys[keyCode]?
+		key_codes =
+			right: [39, 68] # right, D
+			left: [37, 65] # left, A
+			jump: [32, 38, 87] # space, up, W
+			descend: [40, 83] # down, S
 		
-		@x = pressed(39) - pressed(37) # right minus left
-		@start_jump = just_pressed(32) or just_pressed(38) # space or up
-		@extend_jump = pressed(32) or pressed(38) # space or up
-		@descend = just_pressed(40) # down
+		pressed = (key)=>
+			for keyCode in key_codes[key]
+				return yes if @keys[keyCode]?
+			return no
+		just_pressed = (key)=>
+			for keyCode in key_codes[key]
+				return yes if @keys[keyCode]? and not @prev_keys[keyCode]?
+			return no
+		
+		@x = pressed("right") - pressed("left")
+		@start_jump = just_pressed("jump")
+		@extend_jump = pressed("jump")
+		@descend = just_pressed("descend")
 		
 		delete @prev_keys[k] for k, v of @prev_keys
 		@prev_keys[k] = v for k, v of @keys
@@ -391,6 +413,7 @@ gloom.addColorStop 1, '#122'
 paused = no
 
 animate ->
+	return if loading
 	world.step() unless paused
 	{player} = world
 	view.width = canvas.width

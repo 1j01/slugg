@@ -26,7 +26,7 @@ input
 		Ctrl for crouch
 		Down for which?
 		Space?
-	WASD
+	IJKL
 	keyboard customization
 	gamepad support
 
@@ -53,6 +53,11 @@ environment
 			(moved by wind from passing vehicles)
 		pipes
 		animals?
+	Ricky's Railside Restaurant
+		"For real railroad... food"
+		"For real railroad... rations"
+		bags of food hang on poles over the tracks to be picked up by passing cars
+		can be used as the background for the title screen
 
 cars stop at some buildings
 	traffic ensues; can help to make the game easier
@@ -106,17 +111,19 @@ special abilities
 
 music
 	I've got tons of musical ideas recorded over the years, but need to make some actual tracks
+	industrial (in-duh-strial)
 	dynamic progression
 sfx
 	jumping/landing
 	cars going by with dynamic doppler effect
 
 character animations
-	standing
+	idle
+	balancing stance (wider) for when on a moving vehicle?
 	running
-	jumping
+	jumping (maybe rising and falling frames?)
 	vaulting over fence
-	jumping down when no fence
+	jumping down when no fence (maybe just use crouching animation somehow?)
 	ducking / crouching
 	landing? (maybe a cross between jumping and crouching and running)
 	getting hit
