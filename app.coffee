@@ -121,7 +121,8 @@ class MobileEntity extends Entity
 			@vx = min(@max_vx, max(-@max_vx, @vx))
 		else
 			@vx /= 1 + @air_resistance
-		resolution = 5
+		
+		resolution = 20 # higher is better; if too low, you'll slowly slide backwards when on vehicles due to the remainder
 		
 		if footing isnt @previous_footing
 			if footing?.vx
@@ -130,6 +131,9 @@ class MobileEntity extends Entity
 				@vx += @previous_footing.vx
 		
 		# push you back if you're off the front of a vehicle
+		# TODO: FIXME: doesn't work very well
+		# TODO: move away from both edges of moving and static footing
+		# (an exception might need to be added if there are gaps you can walk over)
 		if footing?.vx
 			if footing.vx > 0
 				if @x > footing.x + footing.w

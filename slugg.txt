@@ -6,7 +6,6 @@ physics
 		vaulting over fence animation (visual)
 	you should have a max run speed relative to your footing, not a global max x and y velocity
 	you should be pulled towards the center of a vehicle when off the edge somewhat and when not accelerating left or right
-	fix slowly sliding backwards when on a vehicle
 	wall run
 	maybe maximize x velocity when jumping and holding left or right?
 	and maybe allow left/right a few frames after jumping
