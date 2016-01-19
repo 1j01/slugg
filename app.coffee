@@ -249,6 +249,9 @@ class Character extends MobileEntity
 			image.src = "images/run/frame_#{n}.gif"
 			image
 	
+	stand_image = new Image
+	stand_image.src = "images/stand.png"
+	
 	constructor: ->
 		@jump_velocity ?= 11
 		@air_control ?= 0.1
@@ -302,20 +305,20 @@ class Character extends MobileEntity
 		@facing = +1 if @vx > 0
 		@facing = -1 if @vx < 0
 		ctx.save()
-		ctx.translate @x + @w/2, @y + @h
+		ctx.translate @x + @w/2, @y + @h + 2
 		ctx.scale @facing, 1
 		image =
 			if @grounded
 				if abs(@vx) < 2
-					frames[0]
+					stand_image
 				else
-					# frames[((@x*@facing) // 100) %% 6]
 					@animation_time += @vx * @facing
-					frames[((@animation_time) // 80) %% 6]
+					frames[((@animation_time) // 60) %% 6]
 			else
 				@animation_time = 0
 				frames[3]
-		ctx.drawImage image, -@w, -@h, @h, @h
+		draw_height = @h * 1.6
+		ctx.drawImage image, -@w, -draw_height, draw_height, draw_height
 		ctx.restore()
 		
 
@@ -351,7 +354,7 @@ class KeyboardController
 class Player extends Character
 	constructor: ->
 		@w ?= 16*1.7
-		@h ?= 16*3
+		@h ?= 16*2
 		super
 		@controller = new KeyboardController
 
