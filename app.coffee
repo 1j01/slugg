@@ -9,10 +9,43 @@ load_image = (src)->
 		images_loaded += 1
 		if images_loaded is images_to_load
 			loading = no
+		find_dots(image)
 	image.src = src
 	loading = yes
 	image
 	
+find_dots = (image)->
+	image_canvas = document.createElement("canvas")
+	image_ctx = image_canvas.getContext("2d")
+	image_canvas.width = image.width
+	image_canvas.height = image.height
+	image_ctx.drawImage(image, 0, 0)
+	image_data = image_ctx.getImageData(0, 0, image_canvas.width, image_canvas.height)
+	
+	pixel_locations = {}
+	for y in [0..image_canvas.height]
+		for x in [0..image_canvas.width]
+			idx = (y * image_canvas.width + x) * 4
+			if image_data.data[idx+0] isnt 0 or image_data.data[idx+1] isnt 0 or image_data.data[idx+2] isnt 0
+				color = "rgb(#{image_data.data[idx+0]}, #{image_data.data[idx+1]}, #{image_data.data[idx+2]})"
+				pixel_locations[color] ?= []
+				pixel_locations[color].push {x, y}
+	
+	dots = {}
+	for color, points of pixel_locations
+		x = 0
+		y = 0
+		for point in points
+			x += point.x
+			y += point.y
+		x /= points.length
+		y /= points.length
+		dots[color] = {x, y}
+		# console.log "%c#{color} at (#{x}, #{y})", "color: #{color}; background: black"
+		console.log "%c#{color}", "color: #{color}; background: black"
+	
+	console.log image.dots = dots
+
 
 class World
 	constructor: ->
@@ -269,6 +302,23 @@ class Character extends MobileEntity
 			load_image "images/run/#{n}.png"
 	
 	stand_image = load_image "images/stand.png"
+	
+	limbs = [
+		{name: "head", a: "rgb(253, 31, 43)"}
+		{name: "torso", a: "rgb(253, 31, 43)", b: "rgb(226, 0, 19)"}
+		{name: "back_upper_arm", a: "COLOR", b: "COLOR"}
+		{name: "front_upper_arm", a: "COLOR", b: "COLOR"}
+		{name: "back_fore_arm", a: "COLOR", b: "COLOR"}
+		{name: "front_fore_arm", a: "COLOR", b: "COLOR"}
+		{name: "back_hand", a: "COLOR", b: "COLOR"}
+		{name: "front_hand", a: "COLOR", b: "COLOR"}
+		{name: "back_upper_leg", a: "rgb(226, 0, 19)", b: "rgb(151, 70, 35)"}
+		{name: "front_upper_leg", a: "rgb(253, 31, 43)", b: "rgb(253, 107, 29)"}
+		{name: "back_lower_leg", a: "COLOR", b: "rgb(151, 70, 35)"}
+		{name: "front_lower_leg", a: "COLOR", b: "rgb(253, 107, 29)"}
+		{name: "back_foot", a: "COLOR", b: "COLOR"}
+		{name: "front_foot", a: "COLOR", b: "COLOR"}
+	]
 	
 	constructor: ->
 		@jump_velocity ?= 11
