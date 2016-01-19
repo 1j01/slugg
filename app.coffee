@@ -53,9 +53,6 @@ class Entity
 
 class Platform extends Entity
 
-
-class Roadway extends Platform
-	
 	pattern_canvas = document.createElement("canvas")
 	pattern_ctx = pattern_canvas.getContext("2d")
 	pattern_canvas.width = 10
@@ -84,6 +81,11 @@ class Roadway extends Platform
 		ctx.fillRect @x, @y-@h, @w, 2
 		ctx.fillStyle = pattern
 		ctx.fillRect @x, @y-@h, @w, @h
+
+class Roadway extends Platform
+	constructor: ->
+		@h ?= 16
+		super
 
 class Pathway extends Roadway
 	constructor: ->
@@ -306,6 +308,7 @@ class Character extends MobileEntity
 	
 	draw: (ctx, view)->
 		# return if (@x > view.cx + view.width/2) or (@y > view.cy + view.height/2) or (@x + @w < view.cx - view.width/2) or (@y + @h < view.cy - view.height/2)
+		# FIXME: when you jump off of a train backwards you're sprite flips because of the velocity added to vx
 		@facing = +1 if @vx > 0
 		@facing = -1 if @vx < 0
 		ctx.save()

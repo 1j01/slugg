@@ -102,6 +102,7 @@ special abilities
 	maybe a force field (late game)
 	electric magnet boots for un-overshooting jumps
 	gun that can blow up cars
+	sprint
 
 music
 	I've got tons of musical ideas recorded over the years, but need to make some actual tracks
@@ -117,6 +118,7 @@ character animations
 	vaulting over fence
 	jumping down when no fence
 	ducking / crouching
+	landing? (maybe a cross between jumping and crouching and running)
 	getting hit
 		(btw - if hit in arm, it should spark)
 	wall jumping
