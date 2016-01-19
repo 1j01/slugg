@@ -1,12 +1,4 @@
 
-# 2D world
-# bridge-like roadways
-# vehicles going along the roadways
-# you can jump on the vehicles
-# you can jump on the roadways, but can be run over by vehicles
-# other players may exist and be controlled by neural networks or input-choice world prediction ("Control Choice Simulation"? "Choice Simulation Control"?)
-# you go up
-
 class World
 	constructor: ->
 		@objects = []
@@ -54,6 +46,7 @@ class Entity
 		if props? then @[k] = v for k, v of props
 	
 	draw: (ctx, view)->
+		# TODO: return unless view.inside(x, y, w, h)
 		return if (@x > view.cx + view.width/2) or (@y > view.cy + view.height/2) or (@x + @w < view.cx - view.width/2) or (@y + @h < view.cy - view.height/2)
 		ctx.fillStyle = "#000"
 		ctx.fillRect @x, @y, @w, @h
@@ -121,13 +114,10 @@ class MobileEntity extends Entity
 	air_resistance: 0.001
 	step: (world)->
 		@vy += world.gravity
-		#@vx = min(@max_vx, max(-@max_vx, @vx))
 		@vy = min(@max_vy, max(-@max_vy, @vy))
 		if @is_grounded(world)
 			@vx /= 1 + @friction
 			footing = @collision(world, @x, @y + 1)
-			#if footing.vx?
-				#@vx += footing.vx
 			@vx = min(@max_vx, max(-@max_vx, @vx))
 		else
 			@vx /= 1 + @air_resistance
@@ -139,15 +129,13 @@ class MobileEntity extends Entity
 			else if @previous_footing?.vx
 				@vx += @previous_footing.vx
 		
+		# push you back if you're off the front of a vehicle
 		if footing?.vx
-			#@vx *= 0.99
 			if footing.vx > 0
 				if @x > footing.x + footing.w
-					#@vx *= 0.8
 					@vx -= 1
 			else
 				if @x < footing.x
-					#@vx *= 0.8
 					@vx += 1
 		
 		xtg = @vx
@@ -254,6 +242,13 @@ class Vehicle extends MobileEntity
 				@find_free_position(world)
 
 class Character extends MobileEntity
+	
+	frames =
+		for n in [0..5]
+			image = new Image
+			image.src = "images/run/frame_#{n}.gif"
+			image
+	
 	constructor: ->
 		@jump_velocity ?= 13
 		@air_control ?= 0.2
@@ -262,31 +257,19 @@ class Character extends MobileEntity
 		super
 		@y -= @h
 		@squish = 0
+		@facing = 1
+		@animation_time = 0
 	
 	step: (world)->
 		@invincibility -= 1
 		@controller.update()
 		@descend = @controller.descend
-		grounded = @is_grounded(world)
-		if grounded
+		@grounded = @is_grounded(world)
+		if @grounded
 			@vx += @controller.x
 			
 			if @controller.jump
-				# consider maxing vx
-				#footing = @collision(world, @x, @y + 1)
 				@vy = -@jump_velocity
-				#if footing?.vx?
-					#@vx += footing.vx
-				# let's try handling this with previous_footing in MobileEntity
-			
-			
-			# whoops, this isn't supposed to be when jumping
-			#@vx = min(abs(@vx), abs(footing.vx)) * sign(@vx)
-			#@vx = min(abs(@vx), abs(footing.vx)) * sign(footing.vx)
-			#if footing.vx > 0
-				#@vx = min(@vx, footing.vx)
-			#else
-				#@vx = max(@vx, footing.vx)
 			
 		else if @controller.jump
 			if @collision(world, @x + 1, @y) # and collision shifted in y?
@@ -303,9 +286,31 @@ class Character extends MobileEntity
 		else
 			@vx += @controller.x * @air_control
 		
-		@squish += (grounded - @squish) / 4
+		@squish += (@grounded - @squish) / 4
 		
 		super
+	
+	draw: (ctx, view)->
+		# return if (@x > view.cx + view.width/2) or (@y > view.cy + view.height/2) or (@x + @w < view.cx - view.width/2) or (@y + @h < view.cy - view.height/2)
+		@facing = +1 if @vx > 0
+		@facing = -1 if @vx < 0
+		ctx.save()
+		ctx.translate @x + @w/2, @y + @h
+		ctx.scale @facing, 1
+		image =
+			if @grounded
+				if abs(@vx) < 2
+					frames[0]
+				else
+					# frames[((@x*@facing) // 100) %% 6]
+					@animation_time += @vx * @facing
+					frames[((@animation_time) // 80) %% 6]
+			else
+				@animation_time = 0
+				frames[3]
+		ctx.drawImage image, -@w, -@h, @h, @h
+		ctx.restore()
+		
 
 #class NonPlayerCharacter extends Character
 	#constructor: ->
@@ -342,34 +347,6 @@ class Player extends Character
 		@h ?= 16*3
 		super
 		@controller = new KeyboardController
-	
-	draw: (ctx)->
-		ctx.save()
-		ctx.translate(@x + @w/2, @y + @h/2)
-		r = @w / 2
-		c = r * 4 * (sqrt(2)-1) / 3
-		ctx.beginPath()
-		ctx.scale(1, @h/@w)
-		ctx.rotate(-TAU/4)
-		ctx.moveTo(+0, +r)
-		s = (@squish)/4 * r
-		#ctx.bezierCurveTo(+c,+r,  +r,+c,  +r,+0)
-		#ctx.bezierCurveTo(+r,-c,  +c,-r,  +0,-r)
-		#ctx.bezierCurveTo(-c-s,-r,  -r-s,-c,  -r-s,+0)
-		#ctx.bezierCurveTo(-r-s,+c,  -c-s,+r,  +0-s,+r)
-		ctx.bezierCurveTo(+c,+r,  +r,+c,  +r,+0)
-		ctx.bezierCurveTo(+r,-c,  +c,-r,  +0,-r)
-		ctx.bezierCurveTo(-c-s,-r-s,  -r-s,-c-s,  -r-s,+0)
-		ctx.bezierCurveTo(-r-s,+c+s,  -c-s,+r+s,  +0-s,+r)
-		#ctx.bezierCurveTo(+c,+r,  +r,+c,  +r,+0)
-		#ctx.bezierCurveTo(+r,-c,  +c,-r,  +0,-r)
-		#ctx.bezierCurveTo(-c-s,-r,  -r-s,-c,  -r-s,+0)
-		#ctx.bezierCurveTo(-r-s,+c,  -c-s,+r,  +0-s,+r)
-		
-		ctx.restore()
-		ctx.fillStyle = "#000"
-		ctx.fill()
-
 
 
 @world = new World()
@@ -410,12 +387,9 @@ animate ->
 	#move_view_to_cy = min(400*16, max(-400*16, move_view_to_cy))
 	view.cx += (move_view_to_cx - view.cx) / 5
 	view.cy += (move_view_to_cy - view.cy) / 5
-	#ctx.clearRect(0, 0, canvas.width, canvas.height)
 	ctx.fillStyle = gloom # "#233"
 	ctx.fillRect(0, 0, canvas.width, canvas.height)
 	ctx.fillStyle = sunset
-	#ctx.globalAlpha = (sin(Date.now() / 5000) + 1) / 2
-	#ctx.globalAlpha = (-player.y / (200*16))
 	ctx.globalAlpha = min(1, max(0, -view.cy / (500*16)))
 	ctx.fillRect(0, 0, canvas.width, canvas.height)
 	ctx.fillStyle = "#000"
@@ -423,7 +397,6 @@ animate ->
 	ctx.fillRect(0, 0, canvas.width, canvas.height)
 	ctx.globalAlpha = 1
 	ctx.save()
-	#ctx.translate(view.cx - canvas.width/2, view.cy - canvas.height/2)
 	ctx.translate(canvas.width/2 - view.cx, canvas.height/2 - view.cy)
 	world.draw(ctx, view)
 	ctx.restore()
