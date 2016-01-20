@@ -309,8 +309,8 @@ class Character extends MobileEntity
 	stand_image = load_image "stand"
 	jump_image = load_image "jump"
 	wall_slide_image = load_image "wall-slide"
-	
-	# segments_image = load_image "segments"
+	fall_forwards_image = load_image "fall-forwards"
+	fall_downwards_image = load_image "fall-downwards"
 	
 	segments = [
 		{name: "head", a: "rgb(174, 55, 58)", b: "rgb(253, 31, 43)"}
@@ -405,15 +405,15 @@ class Character extends MobileEntity
 				@animation_time = 0
 				if @against_wall_right or @against_wall_left
 					wall_slide_image
-				else
+				else if @vy < 0
 					jump_image
+				else if abs(@vx) > 6
+					fall_forwards_image
+				else
+					fall_downwards_image
 		
 		next_image ?= image
 		next_frame_amount ?= 0
-		
-		# ctx.drawImage image, -@w, -draw_height, draw_height, draw_height
-		# ctx.drawImage segments_image, 35, 65, 50, 134, 0, 0, 50, 134
-		# ctx.drawImage 
 		
 		draw_height = @h * 1.6
 		ctx.scale(draw_height / image.height, draw_height / image.height)
@@ -424,8 +424,6 @@ class Character extends MobileEntity
 			for color, dot of segment.image.dots
 				pivot = dot
 				break
-			# placement = image.dots[segment.a]
-			# towards = image.dots[segment.b]
 			placement = image.dots[segment.a]
 			towards = image.dots[segment.b]
 			next_placement = next_image.dots[segment.a]
@@ -435,7 +433,6 @@ class Character extends MobileEntity
 			ctx.save()
 			ctx.translate(placement.x - image.width/2, placement.y - image.height)
 			ctx.rotate(atan2(towards.y - placement.y, towards.x - placement.x) - TAU/4)
-			# ctx.rotate(atan2(placement.y - towards.y, placement.x - towards.x))
 			ctx.drawImage(segment.image, -pivot.x, -pivot.y)
 			ctx.restore()
 		ctx.restore()
