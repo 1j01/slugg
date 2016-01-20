@@ -107,6 +107,7 @@ special abilities
 	electric magnet boots for un-overshooting jumps
 	gun that can blow up cars
 	sprint
+	capacitor on the tracks that you can get energy from (and blow up)
 
 music
 	I've got tons of musical ideas recorded over the years, but need to make some actual tracks
@@ -133,3 +134,4 @@ character animations
 	wall run
 	turning? skidding?
 	rolling or sliding
+	running up against a wall / leaning

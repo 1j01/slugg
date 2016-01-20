@@ -2,7 +2,7 @@
 images_to_load = 0
 images_loaded = 0
 loading = no
-load_image = (src)->
+load_image = (path)->
 	images_to_load += 1
 	image = new Image
 	image.addEventListener "load", (e)->
@@ -10,10 +10,12 @@ load_image = (src)->
 		if images_loaded is images_to_load
 			loading = no
 		find_dots(image)
-	image.src = src
+	image.addEventListener "error", (e)->
+		console.error "Failed to load image: #{path}"
+	image.src = "images/#{path}.png"
 	loading = yes
 	image
-	
+
 find_dots = (image)->
 	image_canvas = document.createElement("canvas")
 	image_ctx = image_canvas.getContext("2d")
@@ -23,10 +25,10 @@ find_dots = (image)->
 	image_data = image_ctx.getImageData(0, 0, image_canvas.width, image_canvas.height)
 	
 	pixel_locations = {}
-	for y in [0..image_canvas.height]
-		for x in [0..image_canvas.width]
+	for y in [0...image_canvas.height]
+		for x in [0...image_canvas.width]
 			idx = (y * image_canvas.width + x) * 4
-			if image_data.data[idx+0] isnt 0 or image_data.data[idx+1] isnt 0 or image_data.data[idx+2] isnt 0
+			if (image_data.data[idx+0] isnt 0) or (image_data.data[idx+1] isnt 0) or (image_data.data[idx+2] isnt 0)
 				color = "rgb(#{image_data.data[idx+0]}, #{image_data.data[idx+1]}, #{image_data.data[idx+2]})"
 				pixel_locations[color] ?= []
 				pixel_locations[color].push {x, y}
@@ -40,11 +42,14 @@ find_dots = (image)->
 			y += point.y
 		x /= points.length
 		y /= points.length
-		dots[color] = {x, y}
+		dots[color] = {x, y, color}
 		# console.log "%c#{color} at (#{x}, #{y})", "color: #{color}; background: black"
 		console.log "%c#{color}", "color: #{color}; background: black"
 	
 	console.log image.dots = dots
+	console.log Object.keys(dots).length
+	# if Object.keys(dots).length isnt 18
+	# 	window.open image.src
 
 
 class World
@@ -299,28 +304,32 @@ class Character extends MobileEntity
 	
 	frames =
 		for n in [1..6]
-			load_image "images/run/#{n}.png"
+			load_image "run/#{n}"
 	
-	stand_image = load_image "images/stand.png"
-	jump_image = load_image "images/jump.png"
-	wall_slide_image = load_image "images/wall-slide.png"
+	stand_image = load_image "stand"
+	jump_image = load_image "jump"
+	wall_slide_image = load_image "wall-slide"
 	
-	limbs = [
-		{name: "head", a: "rgb(253, 31, 43)"}
+	# segments_image = load_image "segments"
+	
+	segments = [
+		{name: "head", a: "rgb(174, 55, 58)", b: "rgb(253, 31, 43)"}
 		{name: "torso", a: "rgb(253, 31, 43)", b: "rgb(226, 0, 19)"}
-		{name: "back_upper_arm", a: "COLOR", b: "COLOR"}
-		{name: "front_upper_arm", a: "COLOR", b: "COLOR"}
-		{name: "back_fore_arm", a: "COLOR", b: "COLOR"}
-		{name: "front_fore_arm", a: "COLOR", b: "COLOR"}
-		{name: "back_hand", a: "COLOR", b: "COLOR"}
-		{name: "front_hand", a: "COLOR", b: "COLOR"}
+		{name: "front_upper_arm", a: "rgb(28, 13, 251)", b: "rgb(228, 53, 252)"}
+		{name: "front_forearm", a: "rgb(228, 53, 252)", b: "rgb(60, 255, 175)"}
+		{name: "front_hand", a: "rgb(60, 255, 175)", b: "rgb(79, 210, 157)"}
+		{name: "back_upper_arm", a: "rgb(44, 77, 92)", b: "rgb(93, 43, 91)"}
+		{name: "back_forearm", a: "rgb(93, 43, 91)", b: "rgb(44, 152, 40)"}
+		{name: "back_hand", a: "rgb(44, 152, 40)", b: "rgb(79, 149, 75)"}
+		{name: "front_upper_leg", a: "rgb(226, 0, 19)", b: "rgb(253, 107, 29)"}
+		{name: "front_lower_leg", a: "rgb(253, 107, 29)", b: "rgb(224, 239, 105)"}
+		{name: "front_foot", a: "rgb(228, 255, 51)", b: "rgb(224, 239, 105)"}
 		{name: "back_upper_leg", a: "rgb(226, 0, 19)", b: "rgb(151, 70, 35)"}
-		{name: "front_upper_leg", a: "rgb(253, 31, 43)", b: "rgb(253, 107, 29)"}
-		{name: "back_lower_leg", a: "COLOR", b: "rgb(151, 70, 35)"}
-		{name: "front_lower_leg", a: "COLOR", b: "rgb(253, 107, 29)"}
-		{name: "back_foot", a: "COLOR", b: "COLOR"}
-		{name: "front_foot", a: "COLOR", b: "COLOR"}
+		{name: "back_lower_leg", a: "rgb(151, 70, 35)", b: "rgb(126, 119, 24)"}
+		{name: "back_foot", a: "rgb(170, 161, 30)", b: "rgb(126, 119, 24)"}
 	]
+	for segment in segments
+		segment.image = load_image "segments/#{segment.name.replace /_/g, "-"}"
 	
 	constructor: ->
 		@jump_velocity ?= 11
@@ -380,14 +389,17 @@ class Character extends MobileEntity
 		@facing = +1 if @vx > 0
 		@facing = -1 if @vx < 0
 		ctx.save()
-		ctx.translate @x + @w/2, @y + @h + 2
-		ctx.scale @facing, 1
+		ctx.translate(@x + @w/2, @y + @h + 2)
+		ctx.scale(@facing, 1)
+		
 		image =
 			if @grounded
 				if abs(@vx) < 2
 					stand_image
 				else
 					@animation_time += @vx * @facing
+					next_image = frames[((@animation_time) // 60 + 1) %% 6]
+					next_frame_amount = (@animation_time / 60) %% 1
 					frames[((@animation_time) // 60) %% 6]
 			else
 				@animation_time = 0
@@ -395,8 +407,37 @@ class Character extends MobileEntity
 					wall_slide_image
 				else
 					jump_image
+		
+		next_image ?= image
+		next_frame_amount ?= 0
+		
+		# ctx.drawImage image, -@w, -draw_height, draw_height, draw_height
+		# ctx.drawImage segments_image, 35, 65, 50, 134, 0, 0, 50, 134
+		# ctx.drawImage 
+		
 		draw_height = @h * 1.6
-		ctx.drawImage image, -@w, -draw_height, draw_height, draw_height
+		ctx.scale(draw_height / image.height, draw_height / image.height)
+		
+		lerp = (a, b, x)-> a + (b - a) * x
+		
+		for segment in segments
+			for color, dot of segment.image.dots
+				pivot = dot
+				break
+			# placement = image.dots[segment.a]
+			# towards = image.dots[segment.b]
+			placement = image.dots[segment.a]
+			towards = image.dots[segment.b]
+			next_placement = next_image.dots[segment.a]
+			next_towards = next_image.dots[segment.b]
+			placement = x: lerp(placement.x, next_placement.x, next_frame_amount), y: lerp(placement.y, next_placement.y, next_frame_amount)
+			towards = x: lerp(towards.x, next_towards.x, next_frame_amount), y: lerp(towards.y, next_towards.y, next_frame_amount)
+			ctx.save()
+			ctx.translate(placement.x - image.width/2, placement.y - image.height)
+			ctx.rotate(atan2(towards.y - placement.y, towards.x - placement.x) - TAU/4)
+			# ctx.rotate(atan2(placement.y - towards.y, placement.x - towards.x))
+			ctx.drawImage(segment.image, -pivot.x, -pivot.y)
+			ctx.restore()
 		ctx.restore()
 		
 
