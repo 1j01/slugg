@@ -199,10 +199,11 @@ class MobileEntity extends Entity
 		resolution = 20 # higher is better; if too low, you'll slowly slide backwards when on vehicles due to the remainder
 		
 		if footing isnt @previous_footing
-			if footing?.vx
-				@vx *= 0.3
-			else if @previous_footing?.vx
+			if @previous_footing?.vx
 				@vx += @previous_footing.vx
+			if footing?.vx
+				@vx -= footing.vx
+				@vx *= 0 # stick perfectly; jump up and down on a vehicle without sliding
 		
 		# push you back if you're off the front of a vehicle
 		# TODO: FIXME: doesn't work very well
