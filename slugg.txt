@@ -40,22 +40,25 @@ environment
 	stairs
 		fire escapes (sometimes visual only?)
 	static hazards
-	health stations
-	buildings you can "enter" like a trainyard
+	buildings
+		health stations
+		buildings you can "enter" like a train station / railway platform
+		factories
+		Ricky's Railside Restaurant
+			"For real railroad... food"
+			bags of food hang on poles over the tracks to be picked up by passing cars
+			can be used as the background for the title screen
 	visual
 		neon signs
 		wanted/warning signs
-		lampposts: everything has to be in color??
+		lampposts?
 		electrical wiring
 			(maybe with physics, only simulated when visible)
 			(moved by wind from passing vehicles)
 		pipes
-		animals?
-	Ricky's Railside Restaurant
-		"For real railroad... food"
-		"For real railroad... rations"
-		bags of food hang on poles over the tracks to be picked up by passing cars
-		can be used as the background for the title screen
+		support structures
+		birds, and maybe other animals
+		weather? probably not
 
 cars stop at some buildings
 	traffic ensues; can help to make the game easier

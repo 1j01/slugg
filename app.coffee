@@ -334,7 +334,7 @@ class Vehicle extends MobileEntity
 
 class Character extends MobileEntity
 	
-	frames =
+	run_frames =
 		for n in [1..6]
 			load_dots "run/#{n}"
 	
@@ -362,6 +362,16 @@ class Character extends MobileEntity
 	]
 	for segment in segments
 		segment.image = load_silhouette "segments/#{segment.name.replace /_/g, "-"}"
+	
+	lerp = (a, b, b_ness)-> a + (b - a) * b_ness
+	lerp_frames = (frame_a, frame_b, b_ness)->
+		dots = {}
+		for color, dot of frame_a.dots
+			x = lerp(dot.x, frame_b.dots[color].x, b_ness)
+			y = lerp(dot.y, frame_b.dots[color].y, b_ness)
+			dots[color] = {x, y, color}
+		{width, height} = frame_a
+		{dots, width, height}
 	
 	constructor: ->
 		@jump_velocity ?= 11
@@ -425,21 +435,24 @@ class Character extends MobileEntity
 		ctx.scale(@facing, 1)
 		
 		unless window.animation_data?
-			images = frames.concat stand_image, jump_image, wall_slide_image, fall_forwards_image, fall_downwards_image
+			images = run_frames.concat stand_image, jump_image, wall_slide_image, fall_forwards_image, fall_downwards_image
 			data = {}
 			for image in images
 				data[image.srcID] = {width: image.width, height: image.height, dots: image.dots}
 			window.animation_data = data
 		
-		image =
+		run_frame_a = run_frames[((@animation_time) // 60 + 0) %% 6]
+		run_frame_b = run_frames[((@animation_time) // 60 + 1) %% 6]
+		run_frame_b_ness = (@animation_time / 60) %% 1
+		run_frame = lerp_frames(run_frame_a, run_frame_b, run_frame_b_ness)
+		
+		frame =
 			if @grounded
 				if abs(@vx) < 2
 					stand_image
 				else
 					@animation_time += @vx * @facing
-					next_image = frames[((@animation_time) // 60 + 1) %% 6]
-					next_frame_amount = (@animation_time / 60) %% 1
-					frames[((@animation_time) // 60) %% 6]
+					run_frame
 			else
 				@animation_time = 0
 				if @against_wall_right or @against_wall_left
@@ -451,26 +464,17 @@ class Character extends MobileEntity
 				else
 					fall_downwards_image
 		
-		next_image ?= image
-		next_frame_amount ?= 0
-		
 		draw_height = @h * 1.6
-		ctx.scale(draw_height / image.height, draw_height / image.height)
-		
-		lerp = (a, b, x)-> a + (b - a) * x
+		ctx.scale(draw_height / frame.height, draw_height / frame.height)
 		
 		for segment in segments
 			for color, dot of segment.image.dots
 				pivot = dot
 				break
-			placement = image.dots[segment.a]
-			towards = image.dots[segment.b]
-			next_placement = next_image.dots[segment.a]
-			next_towards = next_image.dots[segment.b]
-			placement = x: lerp(placement.x, next_placement.x, next_frame_amount), y: lerp(placement.y, next_placement.y, next_frame_amount)
-			towards = x: lerp(towards.x, next_towards.x, next_frame_amount), y: lerp(towards.y, next_towards.y, next_frame_amount)
+			placement = frame.dots[segment.a]
+			towards = frame.dots[segment.b]
 			ctx.save()
-			ctx.translate(placement.x - image.width/2, placement.y - image.height)
+			ctx.translate(placement.x - frame.width/2, placement.y - frame.height)
 			ctx.rotate(atan2(towards.y - placement.y, towards.x - placement.x) - TAU/4)
 			ctx.drawImage(segment.image, -pivot.x, -pivot.y)
 			ctx.restore()
