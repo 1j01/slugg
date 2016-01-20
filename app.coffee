@@ -2,19 +2,26 @@
 images_to_load = 0
 images_loaded = 0
 loading = no
-load_image = (path)->
+load_image = (srcID)->
 	images_to_load += 1
 	image = new Image
+	image.srcID = srcID
 	image.addEventListener "load", (e)->
 		images_loaded += 1
 		if images_loaded is images_to_load
 			loading = no
 		find_dots(image)
 	image.addEventListener "error", (e)->
-		console.error "Failed to load image: #{path}"
-	image.src = "images/#{path}.png"
+		console.error "Failed to load image: #{srcID}"
+	image.src = "images/#{srcID}.png"
 	loading = yes
 	image
+
+load_dots = (srcID)->
+	if animation_data?
+		animation_data[srcID]
+	else
+		load_image(srcID)
 
 find_dots = (image)->
 	image_canvas = document.createElement("canvas")
@@ -43,13 +50,9 @@ find_dots = (image)->
 		x /= points.length
 		y /= points.length
 		dots[color] = {x, y, color}
-		# console.log "%c#{color} at (#{x}, #{y})", "color: #{color}; background: black"
-		console.log "%c#{color}", "color: #{color}; background: black"
+		# console.log "%c#{color}", "color: #{color}; background: black"
 	
-	console.log image.dots = dots
-	console.log Object.keys(dots).length
-	# if Object.keys(dots).length isnt 18
-	# 	window.open image.src
+	image.dots = dots
 
 
 class World
@@ -304,13 +307,13 @@ class Character extends MobileEntity
 	
 	frames =
 		for n in [1..6]
-			load_image "run/#{n}"
+			load_dots "run/#{n}"
 	
-	stand_image = load_image "stand"
-	jump_image = load_image "jump"
-	wall_slide_image = load_image "wall-slide"
-	fall_forwards_image = load_image "fall-forwards"
-	fall_downwards_image = load_image "fall-downwards"
+	stand_image = load_dots "stand"
+	jump_image = load_dots "jump"
+	wall_slide_image = load_dots "wall-slide"
+	fall_forwards_image = load_dots "fall-forwards"
+	fall_downwards_image = load_dots "fall-downwards"
 	
 	segments = [
 		{name: "head", a: "rgb(174, 55, 58)", b: "rgb(253, 31, 43)"}
@@ -391,6 +394,13 @@ class Character extends MobileEntity
 		ctx.save()
 		ctx.translate(@x + @w/2, @y + @h + 2)
 		ctx.scale(@facing, 1)
+		
+		unless window.animation_data?
+			images = frames.concat stand_image, jump_image, wall_slide_image, fall_forwards_image, fall_downwards_image
+			data = {}
+			for image in images
+				data[image.srcID] = {width: image.width, height: image.height, dots: image.dots}
+			window.animation_data = data
 		
 		image =
 			if @grounded

@@ -3,16 +3,15 @@ physics
 	jumping over the fences
 		and not getting hit by things on levels above you
 		and when jumping down, almost immediately considering you "of the level below"
-		vaulting over fence animation (visual)
 	you should have a max run speed relative to your footing, not a global max x and y velocity
 	you should be pulled towards the center of a vehicle when off the edge somewhat and when not accelerating left or right
-	wall run
+	hold down while against a wall to fall
+	wall run instead of "jumping" straight up a wall
 	maybe maximize x velocity when jumping and holding left or right?
 	and maybe allow left/right a few frames after jumping
 	maybe have a sort of "queue" of "descensions" (that timeout eventually) so you can double-tap <DESCEND> to go down twice?
 	or maybe just have it so if you held <DESCEND> while in the air you'll descend any floors until you release <DESCEND>
-	maybe do some flips automatically under certain conditions (visual)
-	or do flips if you press up while in the air
+	do flips if you press up while in the air (visual)
 	maybe auto-jump between vehicles
 		note: you will want to go down onto empty train cars
 	clinging to ends of cars
