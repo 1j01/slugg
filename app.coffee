@@ -2,6 +2,7 @@
 images_to_load = 0
 images_loaded = 0
 loading = no
+
 load_image = (srcID)->
 	images_to_load += 1
 	image = new Image
@@ -16,6 +17,20 @@ load_image = (srcID)->
 	image.src = "images/#{srcID}.png"
 	loading = yes
 	image
+
+load_silhouette = (srcID)->
+	image = load_image(srcID)
+	image_canvas = document.createElement("canvas")
+	image_ctx = image_canvas.getContext("2d")
+	image.addEventListener "load", (e)->
+		image_canvas.width = image.width
+		image_canvas.height = image.height
+		image_ctx.drawImage(image, 0, 0)
+		image_ctx.globalCompositeOperation = "source-atop"
+		image_ctx.fillRect(0, 0, image.width, image.height)
+		image_canvas.dots = image.dots
+		image_canvas.srcID = image.srcID
+	image_canvas
 
 load_dots = (srcID)->
 	if animation_data?
@@ -256,6 +271,9 @@ class MobileEntity extends Entity
 			@x += 16 * ~~(random() * 2 + 1) * (if random() < 0.5 then +1 else -1)
 
 class Vehicle extends MobileEntity
+	
+	# train_image = load_image "tiny-train"
+	
 	constructor: ->
 		@heading ?= 0
 		@w ?= 60 + 20 * ~~(random() * 2 + 1)
@@ -303,6 +321,17 @@ class Vehicle extends MobileEntity
 				@x = 16 * -400 - @w - random() * 500
 				@find_free_position(world)
 
+	# draw: (ctx, view)->
+	# 	return if (@x > view.cx + view.width/2) or (@y > view.cy + view.height/2) or (@x + @w < view.cx - view.width/2) or (@y + @h < view.cy - view.height/2)
+	# 	@facing = +1 if @vx > 0
+	# 	@facing = -1 if @vx < 0
+	# 	ctx.save()
+	# 	ctx.translate(@x + @w/2, @y)
+	# 	ctx.scale(-@facing, 1)
+	# 	ctx.drawImage(train_image, -@w/2, 0, @w, @h)
+	# 	ctx.restore()
+		
+
 class Character extends MobileEntity
 	
 	frames =
@@ -332,7 +361,7 @@ class Character extends MobileEntity
 		{name: "back_foot", a: "rgb(170, 161, 30)", b: "rgb(126, 119, 24)"}
 	]
 	for segment in segments
-		segment.image = load_image "segments/#{segment.name.replace /_/g, "-"}"
+		segment.image = load_silhouette "segments/#{segment.name.replace /_/g, "-"}"
 	
 	constructor: ->
 		@jump_velocity ?= 11
