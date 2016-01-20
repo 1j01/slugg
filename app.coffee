@@ -32,8 +32,9 @@ load_silhouette = (srcID)->
 		image_canvas.srcID = image.srcID
 	image_canvas
 
-load_dots = (srcID)->
+load_frame = (srcID)->
 	if animation_data?
+		animation_data[srcID].srcID = srcID
 		animation_data[srcID]
 	else
 		load_image(srcID)
@@ -336,13 +337,13 @@ class Character extends MobileEntity
 	
 	run_frames =
 		for n in [1..6]
-			load_dots "run/#{n}"
+			load_frame "run/#{n}"
 	
-	stand_image = load_dots "stand"
-	jump_image = load_dots "jump"
-	wall_slide_image = load_dots "wall-slide"
-	fall_forwards_image = load_dots "fall-forwards"
-	fall_downwards_image = load_dots "fall-downwards"
+	stand_frame = load_frame "stand"
+	jump_frame = load_frame "jump"
+	wall_slide_frame = load_frame "wall-slide"
+	fall_forwards_frame = load_frame "fall-forwards"
+	fall_downwards_frame = load_frame "fall-downwards"
 	
 	segments = [
 		{name: "head", a: "rgb(174, 55, 58)", b: "rgb(253, 31, 43)"}
@@ -384,6 +385,8 @@ class Character extends MobileEntity
 		@animation_time = 0
 		@squish = 0
 		@facing = 1
+		@weights = {}
+		@weights_to = {}
 	
 	step: (world)->
 		@invincibility -= 1
@@ -433,9 +436,10 @@ class Character extends MobileEntity
 		ctx.save()
 		ctx.translate(@x + @w/2, @y + @h + 2)
 		ctx.scale(@facing, 1)
+		# TODO: flip x with transition (no ctx.scale)
 		
 		unless window.animation_data?
-			images = run_frames.concat stand_image, jump_image, wall_slide_image, fall_forwards_image, fall_downwards_image
+			images = run_frames.concat stand_frame, jump_frame, wall_slide_frame, fall_forwards_frame, fall_downwards_frame
 			data = {}
 			for image in images
 				data[image.srcID] = {width: image.width, height: image.height, dots: image.dots}
@@ -445,36 +449,55 @@ class Character extends MobileEntity
 		run_frame_b = run_frames[((@animation_time) // 60 + 1) %% 6]
 		run_frame_b_ness = (@animation_time / 60) %% 1
 		run_frame = lerp_frames(run_frame_a, run_frame_b, run_frame_b_ness)
+		run_frame.srcID = "run"
 		
-		frame =
+		weighty_frame =
 			if @grounded
 				if abs(@vx) < 2
-					stand_image
+					stand_frame
 				else
 					@animation_time += @vx * @facing
 					run_frame
 			else
 				@animation_time = 0
 				if @against_wall_right or @against_wall_left
-					wall_slide_image
+					wall_slide_frame
 				else if @vy < 0
-					jump_image
+					jump_frame
 				else if abs(@vx) > 6
-					fall_forwards_image
+					fall_forwards_frame
 				else
-					fall_downwards_image
+					fall_downwards_frame
+		
+		frames = [stand_frame, jump_frame, wall_slide_frame, fall_forwards_frame, fall_downwards_frame, run_frame]
+		
+		for frame in frames
+			@weights[frame.srcID] ?= 0
+			@weights_to[frame.srcID] = if frame is weighty_frame then 1 else 0
+			# @weights_to[frame.srcID] = if frame is weighty_frame then 1 else if frame is run_frame then 0.1 else 0
+		
+		for frame in frames
+			@weights[frame.srcID] += (@weights_to[frame.srcID] - @weights[frame.srcID]) / 5
+		
+		calc_frame = stand_frame
+		
+		cumulative_weight = 0
+		for frame in frames
+			frame_weight = @weights[frame.srcID]
+			cumulative_weight += frame_weight
+			calc_frame = lerp_frames(calc_frame, frame, frame_weight/cumulative_weight)
 		
 		draw_height = @h * 1.6
-		ctx.scale(draw_height / frame.height, draw_height / frame.height)
+		ctx.scale(draw_height / calc_frame.height, draw_height / calc_frame.height)
 		
 		for segment in segments
 			for color, dot of segment.image.dots
 				pivot = dot
 				break
-			placement = frame.dots[segment.a]
-			towards = frame.dots[segment.b]
+			placement = calc_frame.dots[segment.a]
+			towards = calc_frame.dots[segment.b]
 			ctx.save()
-			ctx.translate(placement.x - frame.width/2, placement.y - frame.height)
+			ctx.translate(placement.x - calc_frame.width/2, placement.y - calc_frame.height)
 			ctx.rotate(atan2(towards.y - placement.y, towards.x - placement.x) - TAU/4)
 			ctx.drawImage(segment.image, -pivot.x, -pivot.y)
 			ctx.restore()

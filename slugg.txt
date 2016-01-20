@@ -7,6 +7,7 @@ physics
 	you should be pulled towards the center of a vehicle when off the edge somewhat and when not accelerating left or right
 	hold down while against a wall to fall
 	wall run instead of "jumping" straight up a wall
+	crouching and floor sliding
 	maybe maximize x velocity when jumping and holding left or right?
 	and maybe allow left/right a few frames after jumping
 	maybe have a sort of "queue" of "descensions" (that timeout eventually) so you can double-tap <DESCEND> to go down twice?
@@ -137,3 +138,10 @@ character animations
 	turning? skidding?
 	rolling or sliding
 	running up against a wall / leaning
+	TODO: use alternate hand segment when wall-sliding
+	TODO: make falling animations look good
+		pre-interpolate between the two falling frames (and maybe the jumping frame as well?) like is done with the running animation
+		the arm-tucking looks weird, like you're retracting it, not just lowering it
+	TODO: when slowing down, try to end on a good frame of the walk cycle
+		(transitions help a lot, but it still doesn't look natural ending inconsistently)
+		(maybe a walk animation would help)
