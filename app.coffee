@@ -374,6 +374,17 @@ class Character extends MobileEntity
 			dots[color] = {x, y, color}
 		{width, height} = frame_a
 		{dots, width, height}
+		# NOTE: interpolating frames *can* produce bad states where a limb
+		# is shorter than it's supposed to be, potentially jutting out.
+		# This can be remedied by stretching the limbs when drawing if need be.
+	
+	lerp_animation_frames = (frames, position, srcID)->
+		frame_a = frames[(~~(position) + 0) %% frames.length]
+		frame_b = frames[(~~(position) + 1) %% frames.length]
+		frame_b_ness = position %% 1
+		frame = lerp_frames(frame_a, frame_b, frame_b_ness)
+		frame.srcID = srcID
+		frame
 	
 	constructor: ->
 		@jump_velocity ?= 11
@@ -383,7 +394,8 @@ class Character extends MobileEntity
 		super
 		@y -= @h
 		@invincibility = 0
-		@animation_time = 0
+		# @animation_time = 0
+		@run_animation_time = 0
 		@squish = 0
 		@facing = 1
 		@weights = {}
@@ -446,21 +458,19 @@ class Character extends MobileEntity
 				data[image.srcID] = {width: image.width, height: image.height, dots: image.dots}
 			window.animation_data = data
 		
-		run_frame_a = run_frames[((@animation_time) // 60 + 0) %% 6]
-		run_frame_b = run_frames[((@animation_time) // 60 + 1) %% 6]
-		run_frame_b_ness = (@animation_time / 60) %% 1
-		run_frame = lerp_frames(run_frame_a, run_frame_b, run_frame_b_ness)
-		run_frame.srcID = "run"
+		run_frame = lerp_animation_frames(run_frames, @run_animation_time, "run")
+		
+		# @animation_time += 1
 		
 		weighty_frame =
 			if @grounded
 				if abs(@vx) < 2
 					stand_frame
 				else
-					@animation_time += @vx * @facing
+					@run_animation_time += abs(@vx) / 60
 					run_frame
 			else
-				@animation_time = 0
+				@run_animation_time = 0
 				if @against_wall_right or @against_wall_left
 					wall_slide_frame
 				else if @vy < 0
@@ -475,7 +485,13 @@ class Character extends MobileEntity
 		for frame in frames
 			@weights[frame.srcID] ?= 0
 			@weights_to[frame.srcID] = if frame is weighty_frame then 1 else 0
-			# @weights_to[frame.srcID] = if frame is weighty_frame then 1 else if frame is run_frame then 0.1 else 0
+			# @weights_to[frame.srcID] = if frame is weighty_frame then 1 else if frame is liveliness_frame then 0.1 else 0
+		
+		# runningness = min(1, abs(@vx / @max_vx))
+		# # @weights_to.run *= runningness
+		# # @weights_to.stand += (1 - min(1, abs(@vx / @max_vx))) * @weights_to.run
+		# @weights_to.stand += @weights_to.run * (1 - runningness) * 0.4
+		# @weights_to.run *= runningness
 		
 		for frame in frames
 			@weights[frame.srcID] += (@weights_to[frame.srcID] - @weights[frame.srcID]) / 5
