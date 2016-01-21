@@ -7,6 +7,11 @@ physics
 	you should be pulled towards the center of a vehicle when off the edge somewhat and when not accelerating left or right
 	hold down while against a wall to fall
 	wall run instead of "jumping" straight up a wall
+	air control:
+		you shouldn't be able to jump faster than you can run
+		capped velocity
+		we may want to decrease your x velocity when you jump but let you add it back with air control
+		you shouldn't be able to speed up infinitely going backwards
 	crouching and floor sliding
 	maybe maximize x velocity when jumping and holding left or right?
 	and maybe allow left/right a few frames after jumping
@@ -75,6 +80,9 @@ trains
 	SWAT trains
 		machine gun on top
 		guys come out and shoot you
+	speed changer building
+		impassable because ya die
+		used on the edges of the map
 
 something that forces you down
 	like shutes and ladders! LOL
@@ -83,20 +91,29 @@ something that forces you down
 at the start of the game, there's one level you can drop down without dying,
 but after that you would drop to immediate death in a river of garbage
 
-storyline:
-	train crashes
-	prisoners escape (u r 1)
-	other characters with AI, a few of whom are (very) competent
-	cops show up
-	police start out non-lethal and killing civilians turns them lethal (early)
-	helicopter with gun (sorta like Hunted Forever) eventually shows up
-drone strikes
-	see target (you're a cyborg) locked on to ground where you were
-	see drone fly by in background (visual)
-snipers in background buildings
-	similar to drones but static positioning and more dynamic aiming
-an enemy that flies back and forth between the foreground and background
-	a helicopter drone?
+game modes
+	story mode
+		storyline:
+			train crashes
+			prisoners escape (u r 1)
+			other characters with AI, a few of whom are (very) competent
+			cops show up
+			police start out non-lethal and killing civilians turns them lethal (early)
+			helicopter with gun (sorta like Hunted Forever) eventually shows up
+		drone strikes
+			see target (you're a cyborg) locked on to ground where you were
+			see drone fly by in background (visual)
+		snipers in background buildings
+			similar to drones but static positioning and more dynamic aiming
+		an enemy that flies back and forth between the foreground and background
+			a helicopter drone?
+	endless mode
+	arcade mode
+		with silly power ups
+			freeze time
+			flight
+			a force field that lets you blow up trains
+				limited, probably by energy usage
 
 special abilities
 	energy bar
@@ -116,8 +133,12 @@ music
 	I've got tons of musical ideas recorded over the years, but need to make some actual tracks
 	industrial (in-duh-strial)
 	dynamic progression
+	different tracks for different game modes
 sfx
 	jumping/landing
+	running
+	collisions
+	sliding down walls / on the floor
 	cars going by with dynamic doppler effect
 
 character animations
@@ -134,14 +155,12 @@ character animations
 		(btw - if hit in arm, it should spark)
 	wall jumping
 		(btw - when sliding down, hand could spark)
+		pre-wall jump frame?
 	wall run
 	turning? skidding?
 	rolling or sliding
 	running up against a wall / leaning
 	TODO: use alternate hand segment when wall-sliding
-	TODO: make falling animations look good
-		pre-interpolate between the two falling frames (and maybe the jumping frame as well?) like is done with the running animation
-		the arm-tucking looks weird, like you're retracting it, not just lowering it
 	TODO: when slowing down, try to end on a good frame of the walk cycle
 		(transitions help a lot, but it still doesn't look natural ending inconsistently)
 		(maybe a walk animation would help)
