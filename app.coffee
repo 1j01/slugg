@@ -366,14 +366,14 @@ class Character extends MobileEntity
 		segment.image = load_silhouette "segments/#{segment.name.replace /_/g, "-"}"
 	
 	lerp = (a, b, b_ness)-> a + (b - a) * b_ness
-	lerp_frames = (frame_a, frame_b, b_ness)->
+	lerp_frames = (frame_a, frame_b, b_ness, srcID)->
 		dots = {}
 		for color, dot of frame_a.dots
 			x = lerp(dot.x, frame_b.dots[color].x, b_ness)
 			y = lerp(dot.y, frame_b.dots[color].y, b_ness)
 			dots[color] = {x, y, color}
 		{width, height} = frame_a
-		{dots, width, height}
+		{dots, width, height, srcID}
 		# NOTE: interpolating frames *can* produce bad states where a limb
 		# is shorter than it's supposed to be, potentially jutting out.
 		# This can be remedied by stretching the limbs when drawing if need be.
@@ -382,8 +382,7 @@ class Character extends MobileEntity
 		frame_a = frames[(~~(position) + 0) %% frames.length]
 		frame_b = frames[(~~(position) + 1) %% frames.length]
 		frame_b_ness = position %% 1
-		frame = lerp_frames(frame_a, frame_b, frame_b_ness)
-		frame.srcID = srcID
+		frame = lerp_frames(frame_a, frame_b, frame_b_ness, srcID)
 		frame
 	
 	constructor: ->
@@ -394,7 +393,7 @@ class Character extends MobileEntity
 		super
 		@y -= @h
 		@invincibility = 0
-		# @animation_time = 0
+		# @liveliness_animation_time = 0
 		@run_animation_time = 0
 		@squish = 0
 		@facing = 1
@@ -459,8 +458,24 @@ class Character extends MobileEntity
 			window.animation_data = data
 		
 		run_frame = lerp_animation_frames(run_frames, @run_animation_time, "run")
+		# liveliness_frame = lerp_animation_frames(run_frames, @liveliness_animation_time, "liveliness")
 		
-		# @animation_time += 1
+		# @liveliness_animation_time += 1/20
+		
+		# fall_frame:
+		# 	if abs(@vx) > 6
+		# 		fall_forwards_frame
+		# 	else
+		# 		fall_downwards_frame
+		
+		# air_frame:
+		# 	if @vy < 0
+		# 		jump_frame
+		# 	else
+		# 		fall_frame
+		
+		fall_frame = lerp_frames(fall_downwards_frame, fall_forwards_frame, min(1, max(0, abs(@vx)/12)), "fall")
+		air_frame = lerp_frames(jump_frame, fall_frame, min(1, max(0, 1-(6-@vy)/12)), "air")
 		
 		weighty_frame =
 			if @grounded
@@ -473,19 +488,24 @@ class Character extends MobileEntity
 				@run_animation_time = 0
 				if @against_wall_right or @against_wall_left
 					wall_slide_frame
-				else if @vy < 0
-					jump_frame
-				else if abs(@vx) > 6
-					fall_forwards_frame
-				else
-					fall_downwards_frame
+				else 
+					air_frame
 		
-		frames = [stand_frame, jump_frame, wall_slide_frame, fall_forwards_frame, fall_downwards_frame, run_frame]
+		# console.log weighty_frame.srcID, abs(@vx)/12
+		
+		# frames = [stand_frame, wall_slide_frame, jump_frame, fall_forwards_frame, fall_downwards_frame, run_frame]
+		# frames = [stand_frame, wall_slide_frame, jump_frame, fall_forwards_frame, fall_downwards_frame, run_frame, liveliness_frame]
+		frames = [stand_frame, wall_slide_frame, air_frame, run_frame]
 		
 		for frame in frames
 			@weights[frame.srcID] ?= 0
-			@weights_to[frame.srcID] = if frame is weighty_frame then 1 else 0
+			# @weights_to[frame.srcID] = if frame is weighty_frame then 1 else 0
 			# @weights_to[frame.srcID] = if frame is weighty_frame then 1 else if frame is liveliness_frame then 0.1 else 0
+			@weights_to[frame.srcID] = 0
+		
+		@weights_to[weighty_frame.srcID] = 1
+		# @weights_to.liveliness = 0.1 unless weighty_frame is run_frame
+		# @weights_to.liveliness = 0.3 if weighty_frame in [jump_frame, fall_forwards_frame, fall_downwards_frame]
 		
 		# runningness = min(1, abs(@vx / @max_vx))
 		# # @weights_to.run *= runningness
