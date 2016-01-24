@@ -1,5 +1,3 @@
-# SLUGG
+# [SLUGG](http://1j01.github.io/slugg/)
 
-## AKA: TRAINYARDD
-
-A simple little up-going game
+A simple little up-going game set in a distopian city of rails

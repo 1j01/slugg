@@ -27,6 +27,7 @@ physics
 	accurate collision with trains
 		you stand on the rail of one of the trains
 		the tanker's width should be considered less
+		trains should be spaced properly when colliding with other trains
 
 input
 	keys for crouching and dropping
@@ -39,8 +40,6 @@ input
 	mobile support
 
 health and death
-
-now with bigger vehicles relative to the size of the player, everything needs updating
 
 environment
 	less monotonously horizontal layouts

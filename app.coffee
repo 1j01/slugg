@@ -82,7 +82,7 @@ class World
 		y = 0
 		last_was_pathway = yes
 		while y > -1800
-			y -= 32 * ~~(random()*(if last_was_pathway then 2 else 4) + 3)
+			y -= 32 * ~~(random()*(if last_was_pathway then 2 else 4) + 5)
 			if random() < 0.2 and not last_was_pathway
 				@objects.push(new Pathway({y}))
 				last_was_pathway = yes
@@ -298,7 +298,6 @@ class Vehicle extends MobileEntity
 		@h ?= 261.5 * @collsion_height_on_image/@collsion_width_on_image
 		super
 		@y -= @h
-		
 	
 	friction: 0.06
 	step: (world)->
@@ -307,6 +306,7 @@ class Vehicle extends MobileEntity
 		@vx /= 1 + @friction
 		
 		# TODO: let the character pass if they already would have gotten hit but were invincible
+		# +FIXME: player can get stuck if the car slows down and stops ontop of player or if player goes inside a stopped car
 		object = @collision(world, @x + @vx, @y)
 		if object instanceof Character
 			unless object.invincibility > 0
@@ -315,8 +315,8 @@ class Vehicle extends MobileEntity
 					object.vy = -2
 					object.invincibility = 50
 					object.step?(world)
-					density = 2
-					@vx *= (object.w * object.h) / (@w * @h) * density
+					density = 9
+					@vx *= density * (object.w * object.h) / (@w * @h)
 				else
 					unless object.collision(world, object.x, @y - object.h)
 						object.y = @y - object.h
@@ -409,9 +409,9 @@ class Character extends MobileEntity
 		frame
 	
 	constructor: ->
-		@jump_velocity ?= 11
+		@jump_velocity ?= 12
+		@jump_velocity_air_control ?= 0.36
 		@air_control ?= 0.1
-		@jump_air_control_velocity ?= 0.35
 		@health ?= 100
 		super
 		@y -= @h
@@ -441,12 +441,14 @@ class Character extends MobileEntity
 		else if @controller.start_jump
 			# wall jumping
 			if @against_wall_right
-				@vx = -@jump_velocity / (if @controller.x > 0 then 20 else 2)
+				@vx = -@jump_velocity * 0.7 unless @controller.x > 0
+				# @vx = @jump_velocity * 0.7 * @controller.x
 				#@vy -= @jump_velocity / 2 if @vy < 2
 				#@vy = max(-@jump_velocity, @vy * 1.5) if @vy < 0
 				@vy = -@jump_velocity
 			else if @against_wall_left
-				@vx = @jump_velocity / (if @controller.x < 0 then 20 else 2)
+				@vx = @jump_velocity * 0.7 unless @controller.x < 0
+				# @vx = @jump_velocity * 0.7 * @controller.x
 				#@vy -= @jump_velocity / 2 if @vy < 2 # TODO: more dynamic, less conditional
 				#@vy *= 1.5 if @vy < 0
 				#@vy = max(-@jump_velocity, @vy * 1.5) if @vy < 0
@@ -455,7 +457,7 @@ class Character extends MobileEntity
 			# air control
 			@vx += @controller.x * @air_control
 			if @controller.extend_jump
-				@vy -= @jump_air_control_velocity
+				@vy -= @jump_velocity_air_control
 			if @against_wall_right or @against_wall_left
 				@vy *= 0.5 if @vy > 0
 		
