@@ -12,7 +12,8 @@ physics
 		capped velocity
 		we may want to decrease your x velocity when you jump but let you add it back with air control
 		you shouldn't be able to speed up infinitely going backwards
-	crouching and floor sliding
+	floor sliding
+	check for collision before uncrouching
 	maybe maximize x velocity when jumping and holding left or right?
 	and maybe allow left/right a few frames after jumping
 	maybe have a sort of "queue" of "descensions" (that timeout eventually) so you can double-tap <DESCEND> to go down twice?
@@ -176,3 +177,6 @@ character animations
 	TODO: when slowing down, try to end on a good frame of the walk cycle
 		(transitions help a lot, but it still doesn't look natural ending inconsistently)
 		(maybe a walk animation would help)
+	things that looks weird:
+		jumping from crouch: you jump instantly and then slooowly extend your legs, instead of using them at all
+		inching along, especially when holding crouch

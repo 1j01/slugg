@@ -276,8 +276,6 @@ class MobileEntity extends Entity
 class Vehicle extends MobileEntity
 	
 	empty_car_image = load_image "trains/car-empty"
-	# train_image = load_image "trains/car-with-box-silhouette"
-	# train_image = load_image "trains/car-a"
 	train_car_images = [
 		load_image "trains/car-a"
 		load_image "trains/car-b"
@@ -287,8 +285,6 @@ class Vehicle extends MobileEntity
 	
 	constructor: ->
 		@heading ?= 0
-		# @w ?= 60 + 20 * ~~(random() * 2 + 1)
-		# @h ?= 50
 		@image = train_car_images[~~(random()*train_car_images.length)]
 		@collsion_width_on_image = 1491
 		@collsion_height_on_image = 627
@@ -302,8 +298,8 @@ class Vehicle extends MobileEntity
 	
 	friction: 0.06
 	step: (world)->
+		# (no super)
 		@vx += @heading
-		#super
 		@vx /= 1 + @friction
 		
 		# TODO: let the character pass if they already would have gotten hit but were invincible
@@ -426,6 +422,9 @@ class Character extends MobileEntity
 		@air_control ?= 0.1
 		@health ?= 100
 		super
+		@normal_h = @h
+		@crouched_h = @h / 2
+		@crouched = no
 		@y -= @h
 		@invincibility = 0
 		# @liveliness_animation_time = 0
@@ -450,6 +449,12 @@ class Character extends MobileEntity
 			# normal jumping
 			if @controller.start_jump
 				@vy = -@jump_velocity
+			
+			else if @controller.genuflect
+				unless @crouched
+					@h = @crouched_h
+					@y += @normal_h - @crouched_h
+					@crouched = yes
 			
 		else if @controller.start_jump
 			# wall jumping
@@ -479,12 +484,18 @@ class Character extends MobileEntity
 			if @against_wall_left
 				@face = -1
 		
+		if @crouched
+			unless @controller.genuflect and @grounded and @controller.x is 0
+				# TODO: check for collision before uncrouching
+				@h = @normal_h
+				@y -= @normal_h - @crouched_h
+				@crouched = no
+		
 		@squish += (@grounded - @squish) / 4
 		
 		super
 	
 	draw: (ctx, view)->
-		# return if (@x > view.cx + view.width/2) or (@y > view.cy + view.height/2) or (@x + @w < view.cx - view.width/2) or (@y + @h < view.cy - view.height/2)
 		@face = +1 if @controller.x > 0
 		@face = -1 if @controller.x < 0
 		# @face = +1 if @vx > 0 and @controller.x > 0
@@ -573,7 +584,7 @@ class Character extends MobileEntity
 		
 		calc_frame = lerp_frames(calc_frame, flip_frame(calc_frame), (1-@facing)/2)
 		
-		draw_height = @h * 1.6
+		draw_height = @normal_h * 1.6
 		ctx.scale(draw_height / calc_frame.height, draw_height / calc_frame.height)
 		for segment in segments
 			for color, dot of segment.image.dots
@@ -668,6 +679,8 @@ gloom.addColorStop 1, '#122'
 
 paused = no
 
+view_slowness = 8
+
 animate ->
 	return if loading
 	world.step() unless paused
@@ -681,8 +694,8 @@ animate ->
 	move_view_to_cy = player.y
 	move_view_to_cx = min(400*16 - view.width/2, max(-400*16 + view.width/2, move_view_to_cx))
 	#move_view_to_cy = min(400*16, max(-400*16, move_view_to_cy))
-	view.cx += (move_view_to_cx - view.cx) / 5
-	view.cy += (move_view_to_cy - view.cy) / 5
+	view.cx += (move_view_to_cx - view.cx) / view_slowness
+	view.cy += (move_view_to_cy - view.cy) / view_slowness
 	ctx.fillStyle = gloom # "#233"
 	ctx.fillRect(0, 0, canvas.width, canvas.height)
 	ctx.fillStyle = sunset
