@@ -76,8 +76,7 @@ class World
 		@objects = []
 		@gravity = 0.8
 		window.addEventListener "hashchange", (e)=>
-			if location.hash.match /test/
-				return @generate_test_map()
+			@generate()
 	
 	generate: ->
 		if location.hash.match /test/
@@ -207,7 +206,9 @@ class MobileEntity extends Entity
 		@vy ?= 0
 		@max_vx = 15
 		@max_vy = 20
+		@footing = null
 		@previous_footing = null
+		@grounded = no
 		super
 	
 	friction: 0.3
@@ -218,8 +219,11 @@ class MobileEntity extends Entity
 		@vy += world.gravity
 		@vy = min(@max_vy, max(-@max_vy, @vy))
 		
+		@footing = @collision(world, @x, @y + 1)
+		@grounded = not not @footing
+		
 		friction =
-			if @is_grounded(world)
+			if @grounded
 				if @sliding
 					@sliding_friction
 				else if abs(@controller.x) > 0
@@ -231,33 +235,32 @@ class MobileEntity extends Entity
 		
 		@vx /= 1 + friction
 		
-		if @is_grounded(world)
-			footing = @collision(world, @x, @y + 1)
+		if @grounded
 			@vx = min(@max_vx, max(-@max_vx, @vx))
 		
 		resolution = 20 # higher is better; if too low, you'll slowly slide backwards when on vehicles due to the remainder
 		
-		if footing isnt @previous_footing
+		if @footing isnt @previous_footing
 			if @previous_footing?.vx
 				@vx += @previous_footing.vx
-			if footing?.vx
-				@vx -= footing.vx
+			if @footing?.vx
+				@vx -= @footing.vx
 		
 		# push you back if you're off the front of a vehicle
 		# TODO: FIXME: doesn't work very well
 		# TODO: move away from both edges of moving and static footing
 		# (an exception might need to be added if there are gaps you can walk over)
-		if footing?.vx
-			if footing.vx > 0
-				if @x > footing.x + footing.w
+		if @footing?.vx
+			if @footing.vx > 0
+				if @x > @footing.x + @footing.w
 					@vx -= 1
 			else
-				if @x < footing.x
+				if @x < @footing.x
 					@vx += 1
 		
 		xtg = @vx
-		if footing?.vx?
-			xtg += footing.vx
+		if @footing?.vx?
+			xtg += @footing.vx
 		xtg_per_step = sign(xtg) / resolution
 		while abs(xtg) > 1/resolution
 			xtg -= xtg_per_step
@@ -274,7 +277,7 @@ class MobileEntity extends Entity
 				break
 			@y += ytg_per_step
 		
-		@previous_footing = footing
+		@previous_footing = @footing
 	
 	collision: (world, x, y, {type}={})->
 		if @ instanceof Character and not type?
@@ -302,9 +305,6 @@ class MobileEntity extends Entity
 					continue
 				return object
 		return no
-	
-	is_grounded: (world)->
-		not not @collision(world, @x, @y + 1)
 	
 	find_free_position: (world)->
 		while @collision(world, @x, @y)
@@ -395,13 +395,16 @@ class Character extends MobileEntity
 		for n in [1..6]
 			load_frame "run/#{n}"
 	
-	stand_frame = load_frame "stand"
-	crouch_frame = load_frame "crouch"
-	slide_frame = load_frame "floor-slide"
-	jump_frame = load_frame "jump"
-	wall_slide_frame = load_frame "wall-slide"
-	fall_forwards_frame = load_frame "fall-forwards"
-	fall_downwards_frame = load_frame "fall-downwards"
+	images = run_frames.concat [
+		stand_frame = load_frame "stand"
+		stand_wide_frame = load_frame "stand-wide"
+		crouch_frame = load_frame "crouch"
+		slide_frame = load_frame "floor-slide"
+		jump_frame = load_frame "jump"
+		wall_slide_frame = load_frame "wall-slide"
+		fall_forwards_frame = load_frame "fall-forwards"
+		fall_downwards_frame = load_frame "fall-downwards"
+	]
 	
 	segments = [
 		{name: "head", a: "rgb(174, 55, 58)", b: "rgb(253, 31, 43)"}
@@ -474,9 +477,12 @@ class Character extends MobileEntity
 		@invincibility -= 1
 		@controller.update()
 		@descend = @controller.descend
-		@grounded = @is_grounded(world)
+		
+		@footing = @collision(world, @x, @y + 1)
+		@grounded = not not @footing
 		@against_wall_left = @collision(world, @x - 1, @y) and @collision(world, @x - 1, @y - @h + 5)
 		@against_wall_right = @collision(world, @x + 1, @y) and @collision(world, @x + 1, @y - @h + 5)
+		
 		if @grounded
 			if @controller.start_jump
 				# normal jumping
@@ -530,7 +536,6 @@ class Character extends MobileEntity
 		ctx.translate(@x + @w/2, @y + @h + 2)
 		
 		unless window.animation_data?
-			images = run_frames.concat stand_frame, crouch_frame, slide_frame, jump_frame, wall_slide_frame, fall_forwards_frame, fall_downwards_frame
 			data = {}
 			for image in images
 				data[image.srcID] = {width: image.width, height: image.height, dots: image.dots}
@@ -550,6 +555,8 @@ class Character extends MobileEntity
 				if abs(@vx) < 2
 					if @crouched
 						crouch_frame
+					else if @footing?.vx
+						stand_wide_frame
 					else
 						stand_frame
 				else
@@ -565,7 +572,7 @@ class Character extends MobileEntity
 				else 
 					air_frame
 		
-		frames = [stand_frame, crouch_frame, slide_frame, wall_slide_frame, air_frame, run_frame]
+		frames = [stand_frame, stand_wide_frame, crouch_frame, slide_frame, wall_slide_frame, air_frame, run_frame]
 		
 		for frame in frames
 			@weights[frame.srcID] ?= 0

@@ -13,6 +13,7 @@ physics
 		we may want to decrease your x velocity when you jump but let you add it back with air control
 		you shouldn't be able to speed up infinitely going backwards
 	check for collision before uncrouching
+	require more velocity to start sliding
 	if you slide under something you should be able to move out from under it
 	maybe maximize x velocity when jumping and holding left or right?
 		and maybe allow left/right a few frames after jumping
@@ -76,6 +77,7 @@ cars stop at some buildings
 	traffic ensues; can help to make the game easier
 
 trains
+	alerts when coming from offscreen
 	passenger trains
 		helicopter avoids shooting
 	empty cars needed to go through low clearance tunnels
@@ -93,7 +95,7 @@ something that forces you down
 	like a thing that lowers trains or cargo or something
 
 at the start of the game, there's one level you can drop down without dying,
-but after that you would drop to immediate death in a river of garbage
+but after that it's a drop to your immediate death in a river of garbage
 
 game modes
 	story mode
@@ -156,11 +158,13 @@ sfx
 	sliding down walls / on the floor
 	cars going by with dynamic doppler effect
 
+screens
+	pause
+	settings
+
 character animations
 	idle
-	balancing stance (wider) for when on a moving vehicle?
-	running
-	jumping (maybe alternating arms)
+	wider balancing stance: hands should both go out
 	falling
 	vaulting over fence
 	jumping down when no fence (maybe just use crouching animation somehow?)
@@ -186,3 +190,4 @@ character animations
 		wallsliding animation can get reversed
 		sliding backwards
 		sliding on a car to the edge and then getting turned around
+		"bounding": should use alternating hands (and legs)
