@@ -20,10 +20,13 @@ physics
 	do flips if you press up while in the air (visual)
 	maybe auto-jump between vehicles
 		note: you will want to go down onto empty train cars
-	clinging to ends of cars
+	clinging to ends of cars (or edges of buildings?)
 		holding down while going off the edge
-		jump onto the back/front if mostly stopped
+		jump onto the back/front if mostly stopped?
 	ragdollization when hit
+	accurate collision with trains
+		you stand on the rail of one of the trains
+		the tanker's width should be considered less
 
 input
 	keys for crouching and dropping
@@ -33,11 +36,11 @@ input
 		Space?
 	keyboard customization
 	gamepad support
+	mobile support
 
 health and death
 
-establish scale
-	bigger vehicles relative to the size of the player
+now with bigger vehicles relative to the size of the player, everything needs updating
 
 environment
 	less monotonously horizontal layouts
@@ -77,9 +80,7 @@ trains
 	wheel sparks (visual)
 	bullet trains (insta-kill)
 	skylines
-	SWAT trains
-		machine gun on top
-		guys come out and shoot you
+	SWAT trains (see enemies)
 	speed changer building
 		impassable because ya die
 		used on the edges of the map
@@ -99,14 +100,11 @@ game modes
 			other characters with AI, a few of whom are (very) competent
 			cops show up
 			police start out non-lethal and killing civilians turns them lethal (early)
+			as time goes on, and as you destroy stuff, they're willing to spend more on your neuturalization
 			helicopter with gun (sorta like Hunted Forever) eventually shows up
-		drone strikes
-			see target (you're a cyborg) locked on to ground where you were
-			see drone fly by in background (visual)
-		snipers in background buildings
-			similar to drones but static positioning and more dynamic aiming
-		an enemy that flies back and forth between the foreground and background
-			a helicopter drone?
+			the escape was orchestrated for one of the prisoners
+			at the end of the game, you try to reach the top at near the same time as them to get in their escape vehicle
+			otherwise you can reach the top but then just get shot
 	endless mode
 	arcade mode
 		with silly power ups
@@ -114,6 +112,20 @@ game modes
 			flight
 			a force field that lets you blow up trains
 				limited, probably by energy usage
+	(maybe just endless arcade mode?)
+
+ememies
+	drone strikes
+		see target (you're a cyborg) locked on to ground where you were
+		see drone fly by in background (visual)
+	snipers in background buildings
+		similar to drones but static positioning and more dynamic aiming
+	a quadcopter enemy that flies back and forth between the foreground and background
+		drops teargas canisters
+	SWAT trains
+		machine gun on top
+		guys come out and shoot you
+		drops teargas if you're too close for the turret to shoot
 
 special abilities
 	energy bar

@@ -22,6 +22,7 @@ load_silhouette = (srcID)->
 	image = load_image(srcID)
 	image_canvas = document.createElement("canvas")
 	image_ctx = image_canvas.getContext("2d")
+	image_canvas.srcID = srcID
 	image.addEventListener "load", (e)->
 		image_canvas.width = image.width
 		image_canvas.height = image.height
@@ -29,7 +30,6 @@ load_silhouette = (srcID)->
 		image_ctx.globalCompositeOperation = "source-atop"
 		image_ctx.fillRect(0, 0, image.width, image.height)
 		image_canvas.dots = image.dots
-		image_canvas.srcID = image.srcID
 	image_canvas
 
 load_frame = (srcID)->
@@ -274,14 +274,31 @@ class MobileEntity extends Entity
 
 class Vehicle extends MobileEntity
 	
-	# train_image = load_image "tiny-train"
+	empty_car_image = load_image "trains/car-empty"
+	# train_image = load_image "trains/car-with-box-silhouette"
+	# train_image = load_image "trains/car-a"
+	train_car_images = [
+		load_image "trains/car-a"
+		load_image "trains/car-b"
+		load_image "trains/car-c"
+		load_silhouette "trains/box"
+	]
 	
 	constructor: ->
 		@heading ?= 0
-		@w ?= 60 + 20 * ~~(random() * 2 + 1)
-		@h ?= 50
+		# @w ?= 60 + 20 * ~~(random() * 2 + 1)
+		# @h ?= 50
+		@image = train_car_images[~~(random()*train_car_images.length)]
+		@collsion_width_on_image = 1491
+		@collsion_height_on_image = 627
+		if @image.srcID.match /car-a/
+			@collsion_width_on_image = 1491
+			@collsion_height_on_image = 470
+		@w ?= 261.5
+		@h ?= 261.5 * @collsion_height_on_image/@collsion_width_on_image
 		super
 		@y -= @h
+		
 	
 	friction: 0.06
 	step: (world)->
@@ -323,15 +340,21 @@ class Vehicle extends MobileEntity
 				@x = 16 * -400 - @w - random() * 500
 				@find_free_position(world)
 
-	# draw: (ctx, view)->
-	# 	return if (@x > view.cx + view.width/2) or (@y > view.cy + view.height/2) or (@x + @w < view.cx - view.width/2) or (@y + @h < view.cy - view.height/2)
-	# 	@facing = +1 if @vx > 0
-	# 	@facing = -1 if @vx < 0
-	# 	ctx.save()
-	# 	ctx.translate(@x + @w/2, @y)
-	# 	ctx.scale(-@facing, 1)
-	# 	ctx.drawImage(train_image, -@w/2, 0, @w, @h)
-	# 	ctx.restore()
+	draw: (ctx, view)->
+		# FIXME (@x/@y/@w/@h no longer represent the visual boundaries)
+		return if (@x > view.cx + view.width/2) or (@y > view.cy + view.height/2) or (@x + @w < view.cx - view.width/2) or (@y + @h < view.cy - view.height/2)
+		@facing = +1 if @vx > 0
+		@facing = -1 if @vx < 0
+		ctx.save()
+		ctx.translate(@x + @w/2, @y + @h)
+		ctx.scale(-@facing, 1)
+		draw_height = @h * @image.height/@collsion_height_on_image
+		draw_width = @w * @image.width/@collsion_width_on_image
+		# ctx.drawImage(train_image, -@w/2, 0, @w, @w/train_image.width*train_image.height)
+		# ctx.drawImage(train_image, -draw_width/2, 5-draw_height, draw_width, draw_height)
+		ctx.drawImage(@image, -draw_width/2, 5-draw_height, draw_width, draw_height)
+		ctx.drawImage(empty_car_image, -draw_width/2, 35-draw_height, draw_width, draw_height)
+		ctx.restore()
 		
 
 class Character extends MobileEntity
