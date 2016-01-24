@@ -75,8 +75,14 @@ class World
 	constructor: ->
 		@objects = []
 		@gravity = 0.8
+		window.addEventListener "hashchange", (e)=>
+			if location.hash.match /test/
+				return @generate_test_map()
 	
 	generate: ->
+		if location.hash.match /test/
+			return @generate_test_map()
+		
 		@objects = []
 		# TODO: improve layout algorithm
 		y = 0
@@ -97,6 +103,26 @@ class World
 					vehicle = new Vehicle({x: 16 * ~~(random()*800-400), y: y, heading: direction})
 					vehicle.find_free_position(@)
 					@objects.push(vehicle)
+		
+		@objects.push(@player = new Player({x: 50, y: @objects[0].y}))
+		@player.find_free_position(@)
+	
+	generate_test_map: ->
+		@objects = []
+		y = 0
+		@objects.push(new Pathway({y}))
+		for [0..random()*10+1]
+			@objects.push(new Building({x: 16 * ~~(random()*800-400), y}))
+		y -= 32 * 5
+		@objects.push(new Roadway({y}))
+		for [0..random()*10+1]
+			@objects.push(new Building({x: 16 * ~~(random()*800-400), y}))
+		direction = if random() < 0.5 then +1 else -1
+		direction *= 0.7 + random()/3
+		for [0..random()*10+10]
+			vehicle = new Vehicle({x: 16 * ~~(random()*800-400), y: y, heading: direction})
+			vehicle.find_free_position(@)
+			@objects.push(vehicle)
 		
 		@objects.push(@player = new Player({x: 50, y: @objects[0].y}))
 		@player.find_free_position(@)
@@ -186,16 +212,28 @@ class MobileEntity extends Entity
 	
 	friction: 0.3
 	running_friction: 0.1
+	sliding_friction: 0.025
 	air_resistance: 0.001
 	step: (world)->
 		@vy += world.gravity
 		@vy = min(@max_vy, max(-@max_vy, @vy))
+		
+		friction =
+			if @is_grounded(world)
+				if @sliding
+					@sliding_friction
+				else if abs(@controller.x) > 0
+					@running_friction
+				else
+					@friction
+			else
+				@air_resistance
+		
+		@vx /= 1 + friction
+		
 		if @is_grounded(world)
-			@vx /= 1 + if abs(@controller.x) > 0 then @running_friction else @friction
 			footing = @collision(world, @x, @y + 1)
 			@vx = min(@max_vx, max(-@max_vx, @vx))
-		else
-			@vx /= 1 + @air_resistance
 		
 		resolution = 20 # higher is better; if too low, you'll slowly slide backwards when on vehicles due to the remainder
 		
@@ -422,6 +460,7 @@ class Character extends MobileEntity
 		@normal_h = @h
 		@crouched_h = @h / 2
 		@crouched = no
+		@sliding = no
 		@y -= @h
 		@invincibility = 0
 		# @liveliness_animation_time = 0
@@ -439,19 +478,19 @@ class Character extends MobileEntity
 		@against_wall_left = @collision(world, @x - 1, @y) and @collision(world, @x - 1, @y - @h + 5)
 		@against_wall_right = @collision(world, @x + 1, @y) and @collision(world, @x + 1, @y - @h + 5)
 		if @grounded
-			# normal movement
-			@vx += @controller.x
-			
-			# normal jumping
 			if @controller.start_jump
+				# normal jumping
 				@vy = -@jump_velocity
-			
+				@vx += @controller.x
 			else if @controller.genuflect
 				unless @crouched
 					@h = @crouched_h
 					@y += @normal_h - @crouched_h
 					@crouched = yes
-			
+					@sliding = abs(@vx) > 2
+			else
+				# normal movement
+				@vx += @controller.x
 		else if @controller.start_jump
 			# wall jumping
 			if @against_wall_right
@@ -474,11 +513,12 @@ class Character extends MobileEntity
 				@face = -1
 		
 		if @crouched
-			unless @controller.genuflect and @grounded and @controller.x is 0
+			unless @controller.genuflect and @grounded and (((not @sliding) and (@controller.x is 0)) or (@sliding and abs(@vx) > 2))
 				# TODO: check for collision before uncrouching
 				@h = @normal_h
 				@y -= @normal_h - @crouched_h
 				@crouched = no
+				@sliding = no # or else hilarity ensues
 		
 		super
 	
@@ -508,13 +548,16 @@ class Character extends MobileEntity
 		weighty_frame =
 			if @grounded
 				if abs(@vx) < 2
-					if @controller.genuflect
+					if @crouched
 						crouch_frame
 					else
 						stand_frame
 				else
-					@run_animation_time += abs(@vx) / 60
-					run_frame
+					if @sliding
+						slide_frame
+					else
+						@run_animation_time += abs(@vx) / 60
+						run_frame
 			else
 				@run_animation_time = 0
 				if @against_wall_right or @against_wall_left
@@ -522,7 +565,7 @@ class Character extends MobileEntity
 				else 
 					air_frame
 		
-		frames = [stand_frame, crouch_frame, wall_slide_frame, air_frame, run_frame]
+		frames = [stand_frame, crouch_frame, slide_frame, wall_slide_frame, air_frame, run_frame]
 		
 		for frame in frames
 			@weights[frame.srcID] ?= 0

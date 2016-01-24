@@ -12,12 +12,13 @@ physics
 		capped velocity
 		we may want to decrease your x velocity when you jump but let you add it back with air control
 		you shouldn't be able to speed up infinitely going backwards
-	floor sliding
 	check for collision before uncrouching
+	if you slide under something you should be able to move out from under it
 	maybe maximize x velocity when jumping and holding left or right?
-	and maybe allow left/right a few frames after jumping
+		and maybe allow left/right a few frames after jumping
+		and maybe sliding too
 	maybe have a sort of "queue" of "descensions" (that timeout eventually) so you can double-tap <DESCEND> to go down twice?
-	or maybe just have it so if you held <DESCEND> while in the air you'll descend any floors until you release <DESCEND>
+		or maybe just have it so if you held <DESCEND> while in the air you'll descend any floors until you release <DESCEND>
 	do flips if you press up while in the air (visual)
 	maybe auto-jump between vehicles
 		note: you will want to go down onto empty train cars
@@ -166,19 +167,22 @@ character animations
 	ducking / crouching
 	landing? (maybe just add some weight to crouch)
 	decelerating with air control?
+	skidding to a stop?
 	getting hit
 		(btw - if hit in arm, it should spark)
 	wall jumping
 		(btw - when sliding down, hand could spark)
 		pre-wall-jump frame?
 	wall run
-	turning? skidding?
-	rolling or sliding
+	sliding
 	running up against a wall / leaning
 	TODO: use alternate hand segment when wall-sliding
 	TODO: when slowing down, try to end on a good frame of the walk cycle
 		(transitions help a lot, but it still doesn't look natural ending inconsistently)
 		(maybe a walk animation would help)
-	things that looks weird:
+	things that look weird:
 		jumping from crouch: you jump instantly and then slooowly extend your legs, instead of using them at all
 		inching along, especially when holding crouch
+		wallsliding animation can get reversed
+		sliding backwards
+		sliding on a car to the edge and then getting turned around
