@@ -42,6 +42,8 @@ input
 
 health and death
 
+update fence heights and building sizes
+
 environment
 	less monotonously horizontal layouts
 	sections where you can't go up

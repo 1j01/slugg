@@ -129,15 +129,15 @@ class Platform extends Entity
 	pattern_ctx = pattern_canvas.getContext("2d")
 	pattern_canvas.width = 10
 	pattern_canvas.height = 16
-	#pattern_ctx.fillStyle = "#000"
-	#pattern_ctx.fillRect(0, 0, 1, 160)
 	pattern_ctx.strokeStyle = "#000"
-	pattern_ctx.moveTo(0, 0)
-	pattern_ctx.lineTo(pattern_canvas.width, pattern_canvas.height)
-	#pattern_ctx.moveTo(pattern_canvas.width, 0)
-	#pattern_ctx.lineTo(pattern_canvas.width, pattern_canvas.height)
-	pattern_ctx.moveTo(pattern_canvas.width, 0)
-	pattern_ctx.lineTo(0, pattern_canvas.height)
+	# TODO: more interesting patterns
+	fe = 0
+	pattern_ctx.moveTo(fe, 0)
+	pattern_ctx.lineTo(pattern_canvas.width-fe, pattern_canvas.height)
+	pattern_ctx.moveTo(pattern_canvas.width-fe, 0)
+	pattern_ctx.lineTo(fe, pattern_canvas.height)
+	# pattern_ctx.moveTo(pattern_canvas.width/2, 0)
+	# pattern_ctx.lineTo(pattern_canvas.width/2, pattern_canvas.height)
 	pattern_ctx.stroke()
 	pattern = ctx.createPattern(pattern_canvas, "repeat")
 	
@@ -204,7 +204,6 @@ class MobileEntity extends Entity
 				@vx += @previous_footing.vx
 			if footing?.vx
 				@vx -= footing.vx
-				# @vx *= 0 # stick perfectly; jump up and down on a vehicle without sliding
 		
 		# push you back if you're off the front of a vehicle
 		# TODO: FIXME: doesn't work very well
@@ -347,8 +346,6 @@ class Vehicle extends MobileEntity
 		ctx.scale(-@facing, 1)
 		draw_height = @h * @image.height/@collsion_height_on_image
 		draw_width = @w * @image.width/@collsion_width_on_image
-		# ctx.drawImage(train_image, -@w/2, 0, @w, @w/train_image.width*train_image.height)
-		# ctx.drawImage(train_image, -draw_width/2, 5-draw_height, draw_width, draw_height)
 		ctx.drawImage(@image, -draw_width/2, 5-draw_height, draw_width, draw_height)
 		ctx.drawImage(empty_car_image, -draw_width/2, 35-draw_height, draw_width, draw_height)
 		ctx.restore()
@@ -429,7 +426,6 @@ class Character extends MobileEntity
 		@invincibility = 0
 		# @liveliness_animation_time = 0
 		@run_animation_time = 0
-		@squish = 0
 		@face = 1
 		@facing = 1
 		@weights = {}
@@ -459,17 +455,10 @@ class Character extends MobileEntity
 		else if @controller.start_jump
 			# wall jumping
 			if @against_wall_right
-				@vx = -@jump_velocity * 0.7 unless @controller.x > 0
-				# @vx = @jump_velocity * 0.7 * @controller.x
-				#@vy -= @jump_velocity / 2 if @vy < 2
-				#@vy = max(-@jump_velocity, @vy * 1.5) if @vy < 0
+				@vx = @jump_velocity * -0.7 unless @controller.x > 0
 				@vy = -@jump_velocity
 			else if @against_wall_left
-				@vx = @jump_velocity * 0.7 unless @controller.x < 0
-				# @vx = @jump_velocity * 0.7 * @controller.x
-				#@vy -= @jump_velocity / 2 if @vy < 2 # TODO: more dynamic, less conditional
-				#@vy *= 1.5 if @vy < 0
-				#@vy = max(-@jump_velocity, @vy * 1.5) if @vy < 0
+				@vx = @jump_velocity * +0.7 unless @controller.x < 0
 				@vy = -@jump_velocity
 			@face = sign(@vx)
 		else
@@ -491,15 +480,11 @@ class Character extends MobileEntity
 				@y -= @normal_h - @crouched_h
 				@crouched = no
 		
-		@squish += (@grounded - @squish) / 4
-		
 		super
 	
 	draw: (ctx, view)->
 		@face = +1 if @controller.x > 0
 		@face = -1 if @controller.x < 0
-		# @face = +1 if @vx > 0 and @controller.x > 0
-		# @face = -1 if @vx < 0 and @controller.x < 0
 		@facing += (@face - @facing) / 6
 		ctx.save()
 		ctx.translate(@x + @w/2, @y + @h + 2)
@@ -516,18 +501,6 @@ class Character extends MobileEntity
 		# liveliness_frame = lerp_animation_frames(run_frames, @liveliness_animation_time, "liveliness")
 		
 		# @liveliness_animation_time += 1/20
-		
-		# fall_frame:
-		# 	if abs(@vx) > 6
-		# 		fall_forwards_frame
-		# 	else
-		# 		fall_downwards_frame
-		
-		# air_frame:
-		# 	if @vy < 0
-		# 		jump_frame
-		# 	else
-		# 		fall_frame
 		
 		fall_frame = lerp_frames(fall_downwards_frame, fall_forwards_frame, min(1, max(0, abs(@vx)/12)), "fall")
 		air_frame = lerp_frames(jump_frame, fall_frame, min(1, max(0, 1-(6-@vy)/12)), "air")
@@ -549,16 +522,10 @@ class Character extends MobileEntity
 				else 
 					air_frame
 		
-		# console.log weighty_frame.srcID, abs(@vx)/12
-		
-		# frames = [stand_frame, wall_slide_frame, jump_frame, fall_forwards_frame, fall_downwards_frame, run_frame]
-		# frames = [stand_frame, wall_slide_frame, jump_frame, fall_forwards_frame, fall_downwards_frame, run_frame, liveliness_frame]
 		frames = [stand_frame, crouch_frame, wall_slide_frame, air_frame, run_frame]
 		
 		for frame in frames
 			@weights[frame.srcID] ?= 0
-			# @weights_to[frame.srcID] = if frame is weighty_frame then 1 else 0
-			# @weights_to[frame.srcID] = if frame is weighty_frame then 1 else if frame is liveliness_frame then 0.1 else 0
 			@weights_to[frame.srcID] = 0
 		
 		@weights_to[weighty_frame.srcID] = 1
@@ -595,9 +562,6 @@ class Character extends MobileEntity
 			ctx.save()
 			ctx.translate(placement.x - calc_frame.width/2, placement.y - calc_frame.height)
 			ctx.rotate(atan2(towards.y - placement.y, towards.x - placement.x) - TAU/4)
-			# ctx.translate(-pivot.x-segment.image.width/2, -pivot.y)
-			# ctx.scale(@facing, 1)
-			# ctx.drawImage(segment.image, -segment.image.width/2, 0)
 			ctx.scale(@face, 1)
 			ctx.translate(-pivot.x+segment.image.width/2, -pivot.y)
 			ctx.drawImage(segment.image, -segment.image.width/2, 0)
@@ -609,7 +573,7 @@ class Character extends MobileEntity
 	#constructor: ->
 		#super
 		# TODO
-		#@controller = new NeuralNetworkTrainedNonPlayerCharacterMobileEntityControlOperatorBrainObject.Instance..Thing...Idea
+		#@controller = new NPCBrain(iq: 50)
 
 class KeyboardController
 	constructor: ->
@@ -710,14 +674,12 @@ animate ->
 	world.draw(ctx, view)
 	ctx.restore()
 	ctx.save()
-	#ctx.globalCompositeOperation = "darken"
+	# ctx.globalCompositeOperation = "screen"
 	ctx.fillStyle = "rgba(255, 0, 0, #{player.invincibility/150})"
 	ctx.fillRect(0, 0, canvas.width, canvas.height)
 	ctx.restore()
 	
 	if player.y > 100 * 16
-		#player.y = world.objects[0].y - player.h
-		#player.find_free_position(world)
 		world.generate()
 
 pause = ->
