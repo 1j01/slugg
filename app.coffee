@@ -184,13 +184,14 @@ class MobileEntity extends Entity
 		@previous_footing = null
 		super
 	
-	friction: 0.1
+	friction: 0.3
+	running_friction: 0.1
 	air_resistance: 0.001
 	step: (world)->
 		@vy += world.gravity
 		@vy = min(@max_vy, max(-@max_vy, @vy))
 		if @is_grounded(world)
-			@vx /= 1 + @friction
+			@vx /= 1 + if abs(@controller.x) > 0 then @running_friction else @friction
 			footing = @collision(world, @x, @y + 1)
 			@vx = min(@max_vx, max(-@max_vx, @vx))
 		else
@@ -203,7 +204,7 @@ class MobileEntity extends Entity
 				@vx += @previous_footing.vx
 			if footing?.vx
 				@vx -= footing.vx
-				@vx *= 0 # stick perfectly; jump up and down on a vehicle without sliding
+				# @vx *= 0 # stick perfectly; jump up and down on a vehicle without sliding
 		
 		# push you back if you're off the front of a vehicle
 		# TODO: FIXME: doesn't work very well
@@ -453,6 +454,7 @@ class Character extends MobileEntity
 				#@vy *= 1.5 if @vy < 0
 				#@vy = max(-@jump_velocity, @vy * 1.5) if @vy < 0
 				@vy = -@jump_velocity
+			@facing = sign(@vx)
 		else
 			# air control
 			@vx += @controller.x * @air_control
@@ -460,6 +462,10 @@ class Character extends MobileEntity
 				@vy -= @jump_velocity_air_control
 			if @against_wall_right or @against_wall_left
 				@vy *= 0.5 if @vy > 0
+			if @against_wall_right
+				@facing = +1
+			if @against_wall_left
+				@facing = -1
 		
 		@squish += (@grounded - @squish) / 4
 		
@@ -467,13 +473,15 @@ class Character extends MobileEntity
 	
 	draw: (ctx, view)->
 		# return if (@x > view.cx + view.width/2) or (@y > view.cy + view.height/2) or (@x + @w < view.cx - view.width/2) or (@y + @h < view.cy - view.height/2)
-		# FIXME: when you jump off of a train backwards your sprite flips because of the velocity added to vx
-		@facing = +1 if @vx > 0
-		@facing = -1 if @vx < 0
+		@facing = +1 if @controller.x > 0
+		@facing = -1 if @controller.x < 0
+		# @facing = +1 if @vx > 0 and @controller.x > 0
+		# @facing = -1 if @vx < 0 and @controller.x < 0
 		ctx.save()
 		ctx.translate(@x + @w/2, @y + @h + 2)
 		ctx.scale(@facing, 1)
 		# TODO: flip x with transition (no ctx.scale)
+		# lerp_frames(calc_frame, flip_frame(calc_frame))
 		
 		unless window.animation_data?
 			images = run_frames.concat stand_frame, jump_frame, wall_slide_frame, fall_forwards_frame, fall_downwards_frame

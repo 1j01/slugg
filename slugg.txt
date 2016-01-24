@@ -162,6 +162,7 @@ character animations
 	jumping down when no fence (maybe just use crouching animation somehow?)
 	ducking / crouching
 	landing? (maybe a cross between jumping and crouching and running)
+	decelerating with air control?
 	getting hit
 		(btw - if hit in arm, it should spark)
 	wall jumping
