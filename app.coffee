@@ -409,6 +409,15 @@ class Character extends MobileEntity
 		frame = lerp_frames(frame_a, frame_b, frame_b_ness, srcID)
 		frame
 	
+	flip_frame = (frame, srcID)->
+		dots = {}
+		for color, dot of frame.dots
+			x = frame.width - dot.x
+			y = dot.y
+			dots[color] = {x, y, color}
+		{width, height} = frame
+		{dots, width, height, srcID}
+	
 	constructor: ->
 		@jump_velocity ?= 12
 		@jump_velocity_air_control ?= 0.36
@@ -420,6 +429,7 @@ class Character extends MobileEntity
 		# @liveliness_animation_time = 0
 		@run_animation_time = 0
 		@squish = 0
+		@face = 1
 		@facing = 1
 		@weights = {}
 		@weights_to = {}
@@ -454,7 +464,7 @@ class Character extends MobileEntity
 				#@vy *= 1.5 if @vy < 0
 				#@vy = max(-@jump_velocity, @vy * 1.5) if @vy < 0
 				@vy = -@jump_velocity
-			@facing = sign(@vx)
+			@face = sign(@vx)
 		else
 			# air control
 			@vx += @controller.x * @air_control
@@ -463,9 +473,9 @@ class Character extends MobileEntity
 			if @against_wall_right or @against_wall_left
 				@vy *= 0.5 if @vy > 0
 			if @against_wall_right
-				@facing = +1
+				@face = +1
 			if @against_wall_left
-				@facing = -1
+				@face = -1
 		
 		@squish += (@grounded - @squish) / 4
 		
@@ -473,15 +483,13 @@ class Character extends MobileEntity
 	
 	draw: (ctx, view)->
 		# return if (@x > view.cx + view.width/2) or (@y > view.cy + view.height/2) or (@x + @w < view.cx - view.width/2) or (@y + @h < view.cy - view.height/2)
-		@facing = +1 if @controller.x > 0
-		@facing = -1 if @controller.x < 0
-		# @facing = +1 if @vx > 0 and @controller.x > 0
-		# @facing = -1 if @vx < 0 and @controller.x < 0
+		@face = +1 if @controller.x > 0
+		@face = -1 if @controller.x < 0
+		# @face = +1 if @vx > 0 and @controller.x > 0
+		# @face = -1 if @vx < 0 and @controller.x < 0
+		@facing += (@face - @facing) / 6
 		ctx.save()
 		ctx.translate(@x + @w/2, @y + @h + 2)
-		ctx.scale(@facing, 1)
-		# TODO: flip x with transition (no ctx.scale)
-		# lerp_frames(calc_frame, flip_frame(calc_frame))
 		
 		unless window.animation_data?
 			images = run_frames.concat stand_frame, jump_frame, wall_slide_frame, fall_forwards_frame, fall_downwards_frame
@@ -557,9 +565,10 @@ class Character extends MobileEntity
 			cumulative_weight += frame_weight
 			calc_frame = lerp_frames(calc_frame, frame, frame_weight/cumulative_weight)
 		
+		calc_frame = lerp_frames(calc_frame, flip_frame(calc_frame), (1-@facing)/2)
+		
 		draw_height = @h * 1.6
 		ctx.scale(draw_height / calc_frame.height, draw_height / calc_frame.height)
-		
 		for segment in segments
 			for color, dot of segment.image.dots
 				pivot = dot
@@ -569,7 +578,12 @@ class Character extends MobileEntity
 			ctx.save()
 			ctx.translate(placement.x - calc_frame.width/2, placement.y - calc_frame.height)
 			ctx.rotate(atan2(towards.y - placement.y, towards.x - placement.x) - TAU/4)
-			ctx.drawImage(segment.image, -pivot.x, -pivot.y)
+			# ctx.translate(-pivot.x-segment.image.width/2, -pivot.y)
+			# ctx.scale(@facing, 1)
+			# ctx.drawImage(segment.image, -segment.image.width/2, 0)
+			ctx.scale(@face, 1)
+			ctx.translate(-pivot.x+segment.image.width/2, -pivot.y)
+			ctx.drawImage(segment.image, -segment.image.width/2, 0)
 			ctx.restore()
 		ctx.restore()
 		
