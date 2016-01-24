@@ -365,6 +365,8 @@ class Character extends MobileEntity
 			load_frame "run/#{n}"
 	
 	stand_frame = load_frame "stand"
+	crouch_frame = load_frame "crouch"
+	slide_frame = load_frame "floor-slide"
 	jump_frame = load_frame "jump"
 	wall_slide_frame = load_frame "wall-slide"
 	fall_forwards_frame = load_frame "fall-forwards"
@@ -492,11 +494,12 @@ class Character extends MobileEntity
 		ctx.translate(@x + @w/2, @y + @h + 2)
 		
 		unless window.animation_data?
-			images = run_frames.concat stand_frame, jump_frame, wall_slide_frame, fall_forwards_frame, fall_downwards_frame
+			images = run_frames.concat stand_frame, crouch_frame, slide_frame, jump_frame, wall_slide_frame, fall_forwards_frame, fall_downwards_frame
 			data = {}
 			for image in images
 				data[image.srcID] = {width: image.width, height: image.height, dots: image.dots}
 			window.animation_data = data
+			console.log "animation_data = #{JSON.stringify window.animation_data, null, "\t"};\n"
 		
 		run_frame = lerp_animation_frames(run_frames, @run_animation_time, "run")
 		# liveliness_frame = lerp_animation_frames(run_frames, @liveliness_animation_time, "liveliness")
@@ -521,7 +524,10 @@ class Character extends MobileEntity
 		weighty_frame =
 			if @grounded
 				if abs(@vx) < 2
-					stand_frame
+					if @controller.genuflect
+						crouch_frame
+					else
+						stand_frame
 				else
 					@run_animation_time += abs(@vx) / 60
 					run_frame
@@ -536,7 +542,7 @@ class Character extends MobileEntity
 		
 		# frames = [stand_frame, wall_slide_frame, jump_frame, fall_forwards_frame, fall_downwards_frame, run_frame]
 		# frames = [stand_frame, wall_slide_frame, jump_frame, fall_forwards_frame, fall_downwards_frame, run_frame, liveliness_frame]
-		frames = [stand_frame, wall_slide_frame, air_frame, run_frame]
+		frames = [stand_frame, crouch_frame, wall_slide_frame, air_frame, run_frame]
 		
 		for frame in frames
 			@weights[frame.srcID] ?= 0
@@ -610,6 +616,7 @@ class KeyboardController
 			left: [37, 65, 74] # left, A, J
 			jump: [38, 87, 73, 32] # up, W, I, space
 			descend: [40, 83, 75] # down, S, K
+			genuflect: [16, 17, 90] # ctrl, shift, Z
 		
 		pressed = (key)=>
 			for keyCode in key_codes[key]
@@ -624,6 +631,7 @@ class KeyboardController
 		@start_jump = just_pressed("jump")
 		@extend_jump = pressed("jump")
 		@descend = just_pressed("descend")
+		@genuflect = pressed("genuflect")
 		
 		delete @prev_keys[k] for k, v of @prev_keys
 		@prev_keys[k] = v for k, v of @keys
@@ -711,6 +719,6 @@ toggle_pause = ->
 	if paused then unpause() else pause()
 
 window.addEventListener "keydown", (e)->
-	#console.log e.keyCode
+	console.log e.keyCode if e.altKey
 	if e.keyCode is 80 # P
 		toggle_pause()

@@ -161,13 +161,13 @@ character animations
 	vaulting over fence
 	jumping down when no fence (maybe just use crouching animation somehow?)
 	ducking / crouching
-	landing? (maybe a cross between jumping and crouching and running)
+	landing? (maybe just add some weight to crouch)
 	decelerating with air control?
 	getting hit
 		(btw - if hit in arm, it should spark)
 	wall jumping
 		(btw - when sliding down, hand could spark)
-		pre-wall jump frame?
+		pre-wall-jump frame?
 	wall run
 	turning? skidding?
 	rolling or sliding
