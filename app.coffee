@@ -321,7 +321,7 @@ class Vehicle extends MobileEntity
 	]
 	
 	constructor: ->
-		@heading ?= 0
+		@heading ?= 1
 		@image = train_car_images[~~(random()*train_car_images.length)]
 		@collsion_width_on_image = 1491
 		@collsion_height_on_image = 627
@@ -332,6 +332,10 @@ class Vehicle extends MobileEntity
 		@h ?= 261.5 * @collsion_height_on_image/@collsion_width_on_image
 		super
 		@y -= @h
+	
+	find_free_position: (world)->
+		while @collision(world, @x, @y)
+			@x -= 40 * @heading
 	
 	friction: 0.06
 	step: (world)->
