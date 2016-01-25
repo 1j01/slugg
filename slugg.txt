@@ -9,12 +9,12 @@ physics
 	wall run instead of "jumping" straight up a wall
 	air control:
 		you shouldn't be able to jump faster than you can run
-		capped velocity
+		capped velocity (relative to what you jumped from)
 		we may want to decrease your x velocity when you jump but let you add it back with air control
 		you shouldn't be able to speed up infinitely going backwards
 	check for collision before uncrouching
-	require more velocity to start sliding
-	if you slide under something you should be able to move out from under it
+	if you slide under something you should be able to move out from under it (i.e. crawl)
+	should you be able to decelerate a slide? no, and you shouldn't be able to slide backwards
 	maybe maximize x velocity when jumping and holding left or right?
 		and maybe allow left/right a few frames after jumping
 		and maybe sliding too
@@ -31,6 +31,8 @@ physics
 		you stand on the rail of one of the trains
 		the tanker's width should be considered less
 		trains should be spaced properly when colliding with other trains
+		it does look like there's some clearance on the trains you're not supposed to slide under,
+			so maybe you should be able to slide under but then get clobbered
 
 input
 	keys for crouching and dropping
@@ -78,6 +80,7 @@ cars stop at some buildings
 
 trains
 	alerts when coming from offscreen
+	railcars ("cars")
 	passenger trains
 		helicopter avoids shooting
 	empty cars needed to go through low clearance tunnels
@@ -89,6 +92,8 @@ trains
 	speed changer building
 		impassable because ya die
 		used on the edges of the map
+	military transport
+		missle car (visual... unless blown up?)
 
 something that forces you down
 	like shutes and ladders! LOL
@@ -136,9 +141,9 @@ special abilities
 	energy bar
 	getting augmentation inhibitors removed
 		maybe using codes dropped from enemies
-	and/or getting new augmentations
-	/upgrades
-	super jump: higher + better wall jumping if we don't make that the default
+	and/or getting new augmentations/upgrades
+	
+	super jump: steady boosters (increased jump_velocity_air_control) and/or double jump boosters
 	maybe a grappling hook
 	maybe a force field (late game)
 	electric magnet boots for un-overshooting jumps
@@ -147,7 +152,6 @@ special abilities
 	capacitor on the tracks that you can get energy from (and blow up)
 
 music
-	I've got tons of musical ideas recorded over the years, but need to make some actual tracks
 	industrial (in-duh-strial)
 	dynamic progression
 	different tracks for different game modes
@@ -156,38 +160,49 @@ sfx
 	running
 	collisions
 	sliding down walls / on the floor
-	cars going by with dynamic doppler effect
+	cars going by with dynamic doppler effect?
+	sniper shots (towards you)
+	warning indicators (easy)
+	menu sounds (easy)
 
 screens
+	title
 	pause
 	settings
+		controls
+		contrast
+	credits
+		Code | Isaiah Odhner
+		 Art | Jadon Odhner
+		Th-Th-Th-Th-Th-... That's all, folks!
 
 character animations
 	idle
 	wider balancing stance: hands should both go out
-	falling
 	vaulting over fence
-	jumping down when no fence (maybe just use crouching animation somehow?)
-	ducking / crouching
-	landing? (maybe just add some weight to crouch)
+	jumping down when no fence (maybe just use the crouching frame somehow?)
+	landing? (maybe just add some weight to the crouching frame)
 	decelerating with air control?
 	skidding to a stop?
+	pre-wall-jump frame?
+	wall run?
 	getting hit
+		the floor sliding frame used backwards looks like you getting knocked down
 		(btw - if hit in arm, it should spark)
-	wall jumping
-		(btw - when sliding down, hand could spark)
-		pre-wall-jump frame?
-	wall run
-	sliding
-	running up against a wall / leaning
-	TODO: use alternate hand segment when wall-sliding
+	(when wall-sliding, hand could spark)
+	running up against a wall stopping self with arms / leaning
+	TODO: use special hand segment when wall-sliding
 	TODO: when slowing down, try to end on a good frame of the walk cycle
 		(transitions help a lot, but it still doesn't look natural ending inconsistently)
 		(maybe a walk animation would help)
 	things that look weird:
 		jumping from crouch: you jump instantly and then slooowly extend your legs, instead of using them at all
-		inching along, especially when holding crouch
-		wallsliding animation can get reversed
+		jumping from slide
+		getting up from slide
+		sliding backwards
+		jumping backwards
+		inching along, especially when holding crouch (but you can't move crouching anymore) (but what's it supposed to look like?)
+		wall-sliding frame can get reversed
 		sliding backwards
 		sliding on a car to the edge and then getting turned around
-		"bounding": should use alternating hands (and legs)
+		bounding: should use alternating hands (and legs)

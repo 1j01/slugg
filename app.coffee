@@ -493,7 +493,7 @@ class Character extends MobileEntity
 					@h = @crouched_h
 					@y += @normal_h - @crouched_h
 					@crouched = yes
-					@sliding = abs(@vx) > 2
+					@sliding = abs(@vx) > 5
 			else
 				# normal movement
 				@vx += @controller.x
@@ -519,7 +519,7 @@ class Character extends MobileEntity
 				@face = -1
 		
 		if @crouched
-			unless @controller.genuflect and @grounded and (((not @sliding) and (@controller.x is 0)) or (@sliding and abs(@vx) > 2))
+			unless @controller.genuflect and @grounded and ((not @sliding) or (@sliding and abs(@vx) > 2))
 				# TODO: check for collision before uncrouching
 				@h = @normal_h
 				@y -= @normal_h - @crouched_h
