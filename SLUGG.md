@@ -21,8 +21,6 @@
 		* and maybe allow left/right a few frames after jumping
 		* and maybe sliding too
 	* jump if jump key hit a few frames before hitting the ground
-    * maybe have a sort of "queue" of "descensions" (that timeout eventually) so you can double-tap <DESCEND> to go down twice?
-		* or maybe just have it so if you held <DESCEND> while in the air you'll descend any floors until you release <DESCEND>
 	* do flips if you press up while in the air (visual)
 	* maybe auto-jump between vehicles
 		* note: you will want to go down onto empty train cars

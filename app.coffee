@@ -293,9 +293,10 @@ class MobileEntity extends Entity
 				y + @h > object.y
 			)
 				if object instanceof Platform
-					if @descend
-						continue
 					if object.y < @y + @h
+						continue
+					else if @descend > 0
+						@descended = yes
 						continue
 				if @ instanceof Character and object instanceof Vehicle
 					# if you're invincible, treat cars as one way platforms
@@ -476,11 +477,21 @@ class Character extends MobileEntity
 		@facing = 1
 		@weights = {}
 		@weights_to = {}
+		@descend_pressed_last = no
+		@descend = 0
+		@descended = no
 	
 	step: (world)->
 		@invincibility -= 1
 		@controller.update()
-		@descend = @controller.descend
+		if @controller.descend
+			if (not @descend_pressed_last) or @descend > 0
+				@descend = 15
+		if @descended
+			@descend = 0
+			@descended = no
+		@descend -= 1
+		@descend_pressed_last = @controller.descend
 		
 		@footing = @collision(world, @x, @y + 1)
 		@grounded = not not @footing
@@ -659,7 +670,7 @@ class KeyboardController
 		@x = pressed("right") - pressed("left")
 		@start_jump = just_pressed("jump")
 		@extend_jump = pressed("jump")
-		@descend = just_pressed("descend")
+		@descend = pressed("descend")
 		@genuflect = pressed("genuflect")
 		
 		delete @prev_keys[k] for k, v of @prev_keys
