@@ -7,7 +7,7 @@
 		* and when jumping down, almost immediately considering you "of the level below"
 	* you should have a max run speed relative to your footing, not a global max x and y velocity
 	* you should be pulled towards the center of a vehicle when off the edge somewhat and when not accelerating left or right
-	* hold down while against a wall to fall
+	* when you drop down when next to a wall, should you wall slide after/as you drop down? currently you do
 	* wall run instead of "jumping" straight up a wall
 	* air control:
 		* you shouldn't be able to jump faster than you can run
@@ -34,6 +34,7 @@
 		* trains should be spaced properly when colliding with other trains
 		* it does look like there's some clearance on the trains you're not supposed to slide under,
 			* so maybe you should be able to slide under but then get clobbered
+	* you can run or jump off or get hit by a train and then jump constantly to move around the same speed or faster than trains
 
 * input
 	* keyboard customization
@@ -87,7 +88,7 @@
 	* speed changer building
 		* impassable because ya die
 		* used on the edges of the map
-    * wheel sparks (visual)
+	* wheel sparks (visual)
 	* military transport
 		* missle car (visual... unless blown up?)
 
@@ -180,6 +181,7 @@
 	* landing? (maybe just add some weight to the crouching frame)
 	* decelerating with air control?
 	* skidding to a stop?
+	* descending a wall? (holding <kbd>down</kbd>)
 	* pre-wall-jump frame?
 	* wall run?
 	* getting hit
@@ -188,13 +190,10 @@
 	* (when wall-sliding, hand could spark)
 	* running up against a wall stopping self with arms / leaning
 	* TODO: use special hand segment when wall-sliding
-	* TODO: when slowing down, try to end on a good frame of the walk cycle
-		* (transitions help a lot, but it still doesn't look natural ending inconsistently)
-		* (maybe a walk animation would help)
 	* things that look weird:
 		* jumping from crouch: you jump instantly and then slooowly extend your legs, instead of using them at all
 		* jumping from slide
-		* getting up from slide
+		* getting up from slide (maybe try faster transition to/from slide)
 		* sliding backwards
 		* jumping backwards
 		* inching along, especially when holding crouch (but you can't move crouching anymore) (but what's it supposed to look like?)
@@ -202,3 +201,4 @@
 		* sliding backwards
 		* sliding on a car to the edge and then getting turned around
 		* bounding: should use alternating hands (and legs)
+		* standing on the edge of a building

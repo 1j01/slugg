@@ -109,10 +109,20 @@ class World
 	generate_test_map: ->
 		@objects = []
 		y = 0
+		
+		@objects.push(new Pathway({y}))
+		
+		y -= 32 * 5
+		
 		@objects.push(new Pathway({y}))
 		for [0..random()*10+1]
 			@objects.push(new Building({x: 16 * ~~(random()*800-400), y}))
+		
+		@objects.push(@player = new Player({x: 50, y}))
+		@player.find_free_position(@)
+		
 		y -= 32 * 5
+		
 		@objects.push(new Roadway({y}))
 		for [0..random()*10+1]
 			@objects.push(new Building({x: 16 * ~~(random()*800-400), y}))
@@ -123,8 +133,6 @@ class World
 			vehicle.find_free_position(@)
 			@objects.push(vehicle)
 		
-		@objects.push(@player = new Player({x: 50, y: @objects[0].y}))
-		@player.find_free_position(@)
 	
 	step: ->
 		for object in @objects
@@ -279,7 +287,7 @@ class MobileEntity extends Entity
 		
 		@previous_footing = @footing
 	
-	collision: (world, x, y, {type}={})->
+	collision: (world, x, y, {type, detecting_footing}={})->
 		if @ instanceof Character and not type?
 			return yes if x < -400 * 16
 			return yes if x + @w > +400 * 16
@@ -295,7 +303,7 @@ class MobileEntity extends Entity
 				if object instanceof Platform
 					if object.y < @y + @h
 						continue
-					else if @descend > 0
+					else if @descend > 0 and not @descended_wall and not detecting_footing
 						@descended = yes
 						continue
 				if @ instanceof Character and object instanceof Vehicle
@@ -480,6 +488,7 @@ class Character extends MobileEntity
 		@descend_pressed_last = no
 		@descend = 0
 		@descended = no
+		@descended_wall = no
 	
 	step: (world)->
 		@invincibility -= 1
@@ -487,13 +496,16 @@ class Character extends MobileEntity
 		if @controller.descend
 			if (not @descend_pressed_last) or @descend > 0
 				@descend = 15
+		else if @descended_wall
+			@descend = 0
+			@descended_wall = no
 		if @descended
 			@descend = 0
 			@descended = no
 		@descend -= 1
 		@descend_pressed_last = @controller.descend
 		
-		@footing = @collision(world, @x, @y + 1)
+		@footing = @collision(world, @x, @y + 1, detecting_footing: yes)
 		@grounded = not not @footing
 		@against_wall_left = @collision(world, @x - 1, @y) and @collision(world, @x - 1, @y - @h + 5)
 		@against_wall_right = @collision(world, @x + 1, @y) and @collision(world, @x + 1, @y - @h + 5)
@@ -527,7 +539,10 @@ class Character extends MobileEntity
 			if @controller.extend_jump
 				@vy -= @jump_velocity_air_control
 			if @against_wall_right or @against_wall_left
-				@vy *= 0.5 if @vy > 0
+				if @descend > 0
+					@descended_wall = yes
+				else
+					@vy *= 0.5 if @vy > 0
 			if @against_wall_right
 				@face = +1
 			if @against_wall_left
@@ -539,7 +554,7 @@ class Character extends MobileEntity
 				@h = @normal_h
 				@y -= @normal_h - @crouched_h
 				@crouched = no
-				@sliding = no # or else hilarity ensues
+				@sliding = no
 		
 		super
 	
