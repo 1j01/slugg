@@ -159,6 +159,7 @@
 	* sliding down walls / on the floor
 	* cars going by with dynamic doppler effect?
 	* sniper shots (towards you)
+	* [clack](images/mockups/clack.png)
 	* warning indicators (easy)
 	* menu sounds (easy)
 
@@ -168,6 +169,7 @@
 	* settings
 		* controls
 		* contrast
+		* volume(s)
 	* credits
 		* Code | Isaiah Odhner
 		*  Art | Jadon Odhner
@@ -184,6 +186,8 @@
 	* descending a wall? (holding <kbd>down</kbd>)
 	* pre-wall-jump frame?
 	* wall run?
+	* climbing ladder (head on)
+	* ascending/descending stairs
 	* getting hit
 		* the floor sliding frame used backwards looks like you getting knocked down
 		* (btw - if hit in arm, it should spark)
