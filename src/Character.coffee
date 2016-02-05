@@ -19,50 +19,21 @@ class @Character extends MobileEntity
 	segments = [
 		{name: "head", a: "rgb(174, 55, 58)", b: "rgb(253, 31, 43)"}
 		{name: "torso", a: "rgb(253, 31, 43)", b: "rgb(226, 0, 19)"}
-		{name: "front_upper_arm", a: "rgb(28, 13, 251)", b: "rgb(228, 53, 252)"}
-		{name: "front_forearm", a: "rgb(228, 53, 252)", b: "rgb(60, 255, 175)"}
-		{name: "front_hand", a: "rgb(60, 255, 175)", b: "rgb(79, 210, 157)"}
-		{name: "back_upper_arm", a: "rgb(44, 77, 92)", b: "rgb(93, 43, 91)"}
-		{name: "back_forearm", a: "rgb(93, 43, 91)", b: "rgb(44, 152, 40)"}
-		{name: "back_hand", a: "rgb(44, 152, 40)", b: "rgb(79, 149, 75)"}
-		{name: "front_upper_leg", a: "rgb(226, 0, 19)", b: "rgb(253, 107, 29)"}
-		{name: "front_lower_leg", a: "rgb(253, 107, 29)", b: "rgb(224, 239, 105)"}
-		{name: "front_foot", a: "rgb(228, 255, 51)", b: "rgb(224, 239, 105)"}
-		{name: "back_upper_leg", a: "rgb(226, 0, 19)", b: "rgb(151, 70, 35)"}
-		{name: "back_lower_leg", a: "rgb(151, 70, 35)", b: "rgb(126, 119, 24)"}
-		{name: "back_foot", a: "rgb(170, 161, 30)", b: "rgb(126, 119, 24)"}
+		{name: "front-upper-arm", a: "rgb(28, 13, 251)", b: "rgb(228, 53, 252)"}
+		{name: "front-forearm", a: "rgb(228, 53, 252)", b: "rgb(60, 255, 175)"}
+		{name: "front-hand", a: "rgb(60, 255, 175)", b: "rgb(79, 210, 157)"}
+		{name: "back-upper-arm", a: "rgb(44, 77, 92)", b: "rgb(93, 43, 91)"}
+		{name: "back-forearm", a: "rgb(93, 43, 91)", b: "rgb(44, 152, 40)"}
+		{name: "back-hand", a: "rgb(44, 152, 40)", b: "rgb(79, 149, 75)"}
+		{name: "front-upper-leg", a: "rgb(226, 0, 19)", b: "rgb(253, 107, 29)"}
+		{name: "front-lower-leg", a: "rgb(253, 107, 29)", b: "rgb(224, 239, 105)"}
+		{name: "front-foot", a: "rgb(228, 255, 51)", b: "rgb(224, 239, 105)"}
+		{name: "back-upper-leg", a: "rgb(226, 0, 19)", b: "rgb(151, 70, 35)"}
+		{name: "back-lower-leg", a: "rgb(151, 70, 35)", b: "rgb(126, 119, 24)"}
+		{name: "back-foot", a: "rgb(170, 161, 30)", b: "rgb(126, 119, 24)"}
 	]
 	for segment in segments
-		segment.image = load_silhouette "segments/#{segment.name.replace /_/g, "-"}"
-	
-	lerp = (a, b, b_ness)-> a + (b - a) * b_ness
-	lerp_frames = (frame_a, frame_b, b_ness, srcID)->
-		dots = {}
-		for color, dot of frame_a.dots
-			x = lerp(dot.x, frame_b.dots[color].x, b_ness)
-			y = lerp(dot.y, frame_b.dots[color].y, b_ness)
-			dots[color] = {x, y, color}
-		{width, height} = frame_a
-		{dots, width, height, srcID}
-		# NOTE: interpolating frames *can* produce bad states where a limb
-		# is shorter than it's supposed to be, potentially jutting out.
-		# This can be remedied by stretching the limbs when drawing if need be.
-	
-	lerp_animation_frames = (frames, position, srcID)->
-		frame_a = frames[(~~(position) + 0) %% frames.length]
-		frame_b = frames[(~~(position) + 1) %% frames.length]
-		frame_b_ness = position %% 1
-		frame = lerp_frames(frame_a, frame_b, frame_b_ness, srcID)
-		frame
-	
-	flip_frame = (frame, srcID)->
-		dots = {}
-		for color, dot of frame.dots
-			x = frame.width - dot.x
-			y = dot.y
-			dots[color] = {x, y, color}
-		{width, height} = frame
-		{dots, width, height, srcID}
+		segment.image = load_silhouette "segments/#{segment.name}"
 	
 	constructor: ->
 		@jump_velocity ?= 12
@@ -80,12 +51,11 @@ class @Character extends MobileEntity
 		@run_animation_time = 0
 		@face = 1
 		@facing = 1
-		@weights = {}
-		@weights_to = {}
 		@descend_pressed_last = no
 		@descend = 0
 		@descended = no
 		@descended_wall = no
+		@animator = new Animator {segments}
 	
 	step: (world)->
 		@invincibility -= 1
@@ -169,13 +139,12 @@ class @Character extends MobileEntity
 			window.animation_data = data
 			console.log "animation_data = #{JSON.stringify window.animation_data, null, "\t"};\n"
 		
-		run_frame = lerp_animation_frames(run_frames, @run_animation_time, "run")
-		# liveliness_frame = lerp_animation_frames(run_frames, @liveliness_animation_time, "liveliness")
-		
+		run_frame = @animator.lerp_animation_frames(run_frames, @run_animation_time, "run")
+		# liveliness_frame = @animator.lerp_animation_frames(run_frames, @liveliness_animation_time, "liveliness")
 		# @liveliness_animation_time += 1/20
 		
-		fall_frame = lerp_frames(fall_downwards_frame, fall_forwards_frame, min(1, max(0, abs(@vx)/12)), "fall")
-		air_frame = lerp_frames(jump_frame, fall_frame, min(1, max(0, 1-(6-@vy)/12)), "air")
+		fall_frame = @animator.lerp_frames(fall_downwards_frame, fall_forwards_frame, min(1, max(0, abs(@vx)/12)), "fall")
+		air_frame = @animator.lerp_frames(jump_frame, fall_frame, min(1, max(0, 1-(6-@vy)/12)), "air")
 		
 		weighty_frame =
 			if @grounded
@@ -199,48 +168,10 @@ class @Character extends MobileEntity
 				else 
 					air_frame
 		
-		frames = [stand_frame, stand_wide_frame, crouch_frame, slide_frame, wall_slide_frame, air_frame, run_frame]
+		@animator.weight weighty_frame, 1
+		# @animator.weight liveliness_frame, 0.1 unless weighty_frame is run_frame
+		# @animator.weight liveliness_frame, 0.3 if weighty_frame in [jump_frame, fall_forwards_frame, fall_downwards_frame]
 		
-		for frame in frames
-			@weights[frame.srcID] ?= 0
-			@weights_to[frame.srcID] = 0
-		
-		@weights_to[weighty_frame.srcID] = 1
-		# @weights_to.liveliness = 0.1 unless weighty_frame is run_frame
-		# @weights_to.liveliness = 0.3 if weighty_frame in [jump_frame, fall_forwards_frame, fall_downwards_frame]
-		
-		# runningness = min(1, abs(@vx / @max_vx))
-		# # @weights_to.run *= runningness
-		# # @weights_to.stand += (1 - min(1, abs(@vx / @max_vx))) * @weights_to.run
-		# @weights_to.stand += @weights_to.run * (1 - runningness) * 0.4
-		# @weights_to.run *= runningness
-		
-		for frame in frames
-			@weights[frame.srcID] += (@weights_to[frame.srcID] - @weights[frame.srcID]) / 5
-		
-		calc_frame = stand_frame
-		
-		cumulative_weight = 0
-		for frame in frames
-			frame_weight = @weights[frame.srcID]
-			cumulative_weight += frame_weight
-			calc_frame = lerp_frames(calc_frame, frame, frame_weight/cumulative_weight)
-		
-		calc_frame = lerp_frames(calc_frame, flip_frame(calc_frame), (1-@facing)/2)
-		
+		root_frames = [stand_frame, stand_wide_frame, crouch_frame, slide_frame, wall_slide_frame, air_frame, run_frame]
 		draw_height = @normal_h * 1.6
-		ctx.scale(draw_height / calc_frame.height, draw_height / calc_frame.height)
-		for segment in segments
-			for color, dot of segment.image.dots
-				pivot = dot
-				break
-			placement = calc_frame.dots[segment.a]
-			towards = calc_frame.dots[segment.b]
-			ctx.save()
-			ctx.translate(placement.x - calc_frame.width/2, placement.y - calc_frame.height)
-			ctx.rotate(atan2(towards.y - placement.y, towards.x - placement.x) - TAU/4)
-			ctx.scale(@face, 1)
-			ctx.translate(-pivot.x+segment.image.width/2, -pivot.y)
-			ctx.drawImage(segment.image, -segment.image.width/2, 0)
-			ctx.restore()
-		ctx.restore()
+		@animator.draw ctx, draw_height, root_frames, @face, @facing
