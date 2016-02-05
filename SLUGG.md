@@ -93,10 +93,10 @@
 		* used on the edges of the map
 	* wheel sparks (visual)
 	* military transport
-		* missle car (visual only... unless blown up? :boom:)
+		* missile car (visual only... unless blown up? :boom:)
 
 * something that forces you down
-	* like shutes and ladders! LOL
+	* like chutes and ladders! LOL
 	* like a thing that lowers trains or cargo or something
 
 * at the start of the game, there's one level you can drop down without dying,
@@ -110,7 +110,7 @@
 			* other characters with AI, a few of whom are (very) competent
 			* cops show up
 			* police start out non-lethal and killing civilians turns them lethal (early)
-			* as time goes on, and as you destroy stuff, they're willing to spend more on your neuturalization
+			* as time goes on, and as you destroy stuff, they're willing to spend more on your neutralization
 			* helicopter with gun eventually shows up
 			* the escape was orchestrated for one of the prisoners
 			* at the end of the game, you try to reach the top at near the same time as them to get in their escape vehicle
@@ -124,7 +124,7 @@
 				* limited, probably by energy usage
 	* (maybe just endless arcade mode?)
 
-* ememies
+* enemies
 	* drone strikes
 		* see target (you're a cyborg) locked on to ground where you were
 		* see drone fly by in background (visual)
@@ -162,7 +162,7 @@
 	* running
 	* collisions
 	* sliding down walls / on the floor
-	* cars going by with dynamic doppler effect?
+	* cars going by with dynamic Doppler effect?
 	* sniper shots (towards you)
 	* [clack](images/mockups/clack.png)
 	* warning indicators (easy)
