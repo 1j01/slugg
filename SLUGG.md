@@ -77,20 +77,23 @@
 
 * trains
 	* alerts when coming from offscreen
-	* railcars ("cars")
+	* railcars (civilian "cars")
+		* helicopter avoids shooting
+		  (all railcars, though?
+		  I mean, maybe not being constantly attacked is okay but I don't know)
 	* passenger trains
 		* helicopter avoids shooting
 	* empty cars needed to go through low clearance tunnels
 	* big trains you can't jump up onto but can crouch/slide under
 	* bullet trains (insta-kill)
-	* skylines
+	* cable cars (i.e. no ground for you)
 	* SWAT trains (see enemies)
 	* speed changer building
 		* impassable because ya die
 		* used on the edges of the map
 	* wheel sparks (visual)
 	* military transport
-		* missle car (visual... unless blown up?)
+		* missle car (visual only... unless blown up? :boom:)
 
 * something that forces you down
 	* like shutes and ladders! LOL
@@ -108,7 +111,7 @@
 			* cops show up
 			* police start out non-lethal and killing civilians turns them lethal (early)
 			* as time goes on, and as you destroy stuff, they're willing to spend more on your neuturalization
-			* helicopter with gun (sorta like Hunted Forever) eventually shows up
+			* helicopter with gun eventually shows up
 			* the escape was orchestrated for one of the prisoners
 			* at the end of the game, you try to reach the top at near the same time as them to get in their escape vehicle
 			* otherwise you can reach the top but then just get shot
@@ -129,6 +132,8 @@
 		* similar to drones but static positioning and more dynamic aiming
 	* a quadcopter enemy that flies back and forth between the foreground and background
 		* drops teargas canisters
+	* helicopter with gun
+		* the main enemy (sort of like Hunted Forever)
 	* SWAT trains
 		* machine gun on top
 		* guys come out and shoot you
