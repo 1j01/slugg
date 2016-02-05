@@ -1,5 +1,5 @@
 
-class @Pathway extends Roadway
+class @Pathway extends Platform
 	constructor: ->
 		@h ?= 4
 		super
