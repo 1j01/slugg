@@ -2,13 +2,10 @@
 # SLUGG brainstorming document
 
 * physics
-	* jumping over the fences
-		* and not getting hit by things on levels above you
-		* and when jumping down, almost immediately considering you "of the level below"
 	* you should have a max run speed relative to your footing, not a global max x and y velocity
 	* you should be pulled towards the center of a vehicle when off the edge somewhat and when not accelerating left or right
-	* when you drop down when next to a wall, should you wall slide after/as you drop down? currently you do
-	* wall run instead of "jumping" straight up a wall
+	* when you drop down when next to a wall, you probably shouldn't wall slide after/as you drop down
+	* wall run instead of "jumping" straight up a wall (or add back limits to wall jumping)
 	* air control:
 		* you shouldn't be able to jump faster than you can run
 		* capped velocity (relative to what you jumped from)
@@ -16,7 +13,7 @@
 		* you shouldn't be able to speed up infinitely going backwards
 	* check for collision before uncrouching
 	* if you slide under something you should be able to move out from under it (i.e. crawl)
-	* should you be able to decelerate a slide? no, and you shouldn't be able to slide backwards
+	* you shouldn't be able to slide backwards (you don't need to be able to decelerate a slide as you can stop it)
 	* maybe maximize x velocity when jumping and holding left or right?
 		* and maybe allow left/right a few frames after jumping
 		* and maybe sliding too

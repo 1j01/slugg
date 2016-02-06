@@ -21,11 +21,20 @@ class @Platform extends Entity
 		@x ?= 16 * -400
 		@w ?= 16 * 800
 		@h ?= 16
+		@fence_height ?= 0
 		super
 	
-	draw: (ctx)->
+	draw: (ctx, view)->
 		ctx.fillStyle = "#000"
 		ctx.fillRect @x, @y, @w, @h
-		ctx.fillRect @x, @y-@h, @w, 2
+		ctx.fillRect @x, @y - max(@fence_height, 4), @w, 2
 		ctx.fillStyle = pattern
-		ctx.fillRect @x, @y-@h, @w, @h
+		ctx.fillRect @x, @y - max(@fence_height, 4), @w, @h
+		
+		if window.debug_levels
+			ctx.save()
+			ctx.font = "16px sans-serif"
+			ctx.fillStyle = "#fff"
+			ctx.fillText @y, view.cx, @y
+			ctx.restore()
+			# ctx.globalAlpha = 0.7

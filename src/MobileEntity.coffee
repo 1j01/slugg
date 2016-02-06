@@ -9,6 +9,7 @@ class @MobileEntity extends Entity
 		@previous_footing = null
 		@grounded = no
 		super
+		@level_y ?= @y
 	
 	friction: 0.3
 	running_friction: 0.1
@@ -17,6 +18,11 @@ class @MobileEntity extends Entity
 	step: (world)->
 		@vy += world.gravity
 		@vy = min(@max_vy, max(-@max_vy, @vy))
+		
+		for object in world.objects when object instanceof Platform
+			if @y + @h < object.y - object.fence_height
+				if @level_y > object.y
+					@level_y = object.y
 		
 		@footing = @collision(world, @x, @y + 1)
 		@grounded = not not @footing
@@ -92,14 +98,18 @@ class @MobileEntity extends Entity
 				y + @h > object.y
 			)
 				if object instanceof Platform
-					if object.y < @y + @h
+					if object.y < @level_y
 						continue
 					else if @descend > 0 and not @descended_wall and not detecting_footing
 						@descended = yes
+						@level_y = object.y + 1 if @level_y <= object.y
 						continue
 				if @ instanceof Character and object instanceof Vehicle
 					# if you're invincible, treat cars as one way platforms
 					if @invincibility > 0 and object.y < @y + @h
+						continue
+					if object.level_y < @level_y
+					# if object.y < @level_y
 						continue
 				if @ instanceof Vehicle and object instanceof Building
 					continue

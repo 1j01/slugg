@@ -175,3 +175,10 @@ class @Character extends MobileEntity
 		root_frames = [stand_frame, stand_wide_frame, crouch_frame, slide_frame, wall_slide_frame, air_frame, run_frame]
 		draw_height = @normal_h * 1.6
 		@animator.draw ctx, draw_height, root_frames, @face, @facing
+		
+		if window.debug_levels
+			ctx.save()
+			ctx.font = "16px sans-serif"
+			ctx.fillStyle = "#f0f"
+			ctx.fillText @level_y, @x, @y
+			ctx.restore()
