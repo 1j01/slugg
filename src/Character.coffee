@@ -99,7 +99,7 @@ class @Character extends MobileEntity
 			else if @against_wall_left
 				@vx = @jump_velocity * +0.7 unless @controller.x < 0
 				@vy = -@jump_velocity
-			@face = sign(@vx)
+			@face = sign(@vx) unless sign(@vx) is 0
 		else
 			# air control
 			@vx += @controller.x * @air_control
