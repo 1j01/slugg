@@ -60,6 +60,7 @@ class @Animator
 	
 	draw: (ctx, draw_height, root_frames, face=1, facing=1)->
 		calc_frame = @calc root_frames, facing
+		ctx.save()
 		ctx.scale(draw_height / calc_frame.height, draw_height / calc_frame.height)
 		for segment in @segments
 			for color, dot of segment.image.dots

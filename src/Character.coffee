@@ -129,8 +129,6 @@ class @Character extends MobileEntity
 		@face = +1 if @controller.x > 0
 		@face = -1 if @controller.x < 0
 		@facing += (@face - @facing) / 6
-		ctx.save()
-		ctx.translate(@x + @w/2, @y + @h + 2)
 		
 		unless window.animation_data?
 			data = {}
@@ -172,9 +170,12 @@ class @Character extends MobileEntity
 		# @animator.weight liveliness_frame, 0.1 unless weighty_frame is run_frame
 		# @animator.weight liveliness_frame, 0.3 if weighty_frame in [jump_frame, fall_forwards_frame, fall_downwards_frame]
 		
+		ctx.save()
+		ctx.translate(@x + @w/2, @y + @h + 2)
 		root_frames = [stand_frame, stand_wide_frame, crouch_frame, slide_frame, wall_slide_frame, air_frame, run_frame]
 		draw_height = @normal_h * 1.6
 		@animator.draw ctx, draw_height, root_frames, @face, @facing
+		ctx.restore()
 		
 		if window.debug_levels
 			ctx.save()
