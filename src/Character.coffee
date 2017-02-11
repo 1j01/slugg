@@ -76,6 +76,7 @@ class @Character extends MobileEntity
 		@grounded = not not @footing
 		@against_wall_left = @collision(world, @x - 1, @y) and @collision(world, @x - 1, @y - @h + 5)
 		@against_wall_right = @collision(world, @x + 1, @y) and @collision(world, @x + 1, @y - @h + 5)
+		@against_wall = @against_wall_left or @against_wall_right
 		
 		if @grounded
 			if @controller.start_jump
@@ -105,7 +106,7 @@ class @Character extends MobileEntity
 			@vx += @controller.x * @air_control
 			if @controller.extend_jump
 				@vy -= @jump_velocity_air_control
-			if @against_wall_right or @against_wall_left
+			if @against_wall
 				if @descend > 0
 					@descended_wall = yes
 				else
@@ -161,9 +162,9 @@ class @Character extends MobileEntity
 						run_frame
 			else
 				@run_animation_time = 0
-				if @against_wall_right or @against_wall_left
+				if @against_wall
 					wall_slide_frame
-				else 
+				else
 					air_frame
 		
 		@animator.weight weighty_frame, 1
