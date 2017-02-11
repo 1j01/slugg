@@ -49,7 +49,10 @@ class @Animator
 		for frame in root_frames
 			frame_weight = @weights[frame.srcID]
 			cumulative_weight += frame_weight
-			calc_frame = @lerp_frames(calc_frame, frame, frame_weight/cumulative_weight)
+			if cumulative_weight is 0
+				calc_frame = frame # avoid divide by 0
+			else
+				calc_frame = @lerp_frames(calc_frame, frame, frame_weight/cumulative_weight)
 		
 		calc_frame = @lerp_frames(calc_frame, @flip_frame(calc_frame), (1-facing)/2)
 		
