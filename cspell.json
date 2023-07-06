@@ -1,0 +1,37 @@
+{
+    "version": "0.2",
+    "ignorePaths": [
+        "lib/",
+        ".history"
+    ],
+    "dictionaryDefinitions": [],
+    "dictionaries": [],
+    "words": [
+        "concat",
+        "gamepad",
+        "hashchange",
+        "IJKL",
+        "insta",
+        "instanceof",
+        "isnt",
+        "Jaden",
+        "keydown",
+        "keyup",
+        "lerp",
+        "Odhner",
+        "quadcopter",
+        "ragdollization",
+        "railcars",
+        "rgba",
+        "slooowly",
+        "SLUGG",
+        "strial",
+        "uncrouching",
+        "WASD"
+    ],
+    "ignoreWords": [],
+    "import": [],
+    "enableFiletypes": [
+        "coffeescript"
+    ]
+}

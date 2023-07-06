@@ -12,13 +12,13 @@ class @Vehicle extends MobileEntity
 	constructor: ->
 		@heading ?= 1
 		@image = train_car_images[~~(random()*train_car_images.length)]
-		@collsion_width_on_image = 1491
-		@collsion_height_on_image = 627
+		@collision_width_on_image = 1491
+		@collision_height_on_image = 627
 		if @image.srcID.match /car-a/
-			@collsion_width_on_image = 1491
-			@collsion_height_on_image = 470
+			@collision_width_on_image = 1491
+			@collision_height_on_image = 470
 		@w ?= 261.5
-		@h ?= 261.5 * @collsion_height_on_image/@collsion_width_on_image
+		@h ?= 261.5 * @collision_height_on_image/@collision_width_on_image
 		super
 		@level_y = @y
 		@y -= @h
@@ -34,7 +34,7 @@ class @Vehicle extends MobileEntity
 		@vx /= 1 + @friction
 		
 		# TODO: let the character pass if they already would have gotten hit but were invincible
-		# +FIXME: player can get stuck if the car slows down and stops ontop of player or if player goes inside a stopped car
+		# +FIXME: player can get stuck if the car slows down and stops atop player or if player goes inside a stopped car
 		character = @collision(world, @x + @vx, @y, type: Character)
 		if character
 			unless character.invincibility > 0
@@ -79,8 +79,8 @@ class @Vehicle extends MobileEntity
 		ctx.save()
 		ctx.translate(@x + @w/2, @y + @h)
 		ctx.scale(-@facing, 1)
-		draw_height = @h * @image.height/@collsion_height_on_image
-		draw_width = @w * @image.width/@collsion_width_on_image
+		draw_height = @h * @image.height/@collision_height_on_image
+		draw_width = @w * @image.width/@collision_width_on_image
 		ctx.drawImage(@image, -draw_width/2, 5-draw_height, draw_width, draw_height)
 		ctx.drawImage(empty_car_image, -draw_width/2, 35-draw_height, draw_width, draw_height)
 		ctx.restore()

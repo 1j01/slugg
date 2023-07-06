@@ -151,7 +151,7 @@
 	* capacitor on the tracks that you can get energy from (and blow up)
 
 * music
-	* industrial (in-duh-strial)
+	* industrial (in-*duh*-strial)
 	* dynamic progression
 	* different tracks for different game modes
 * sfx
@@ -174,7 +174,7 @@
 		* volume(s)
 	* credits
 		* Code | Isaiah Odhner
-		*  Art | Jadon Odhner
+		*  Art | Jaden Odhner
 		* Th-Th-Th-Th-Th-... That's all, folks!
 
 * character animations
