@@ -43,6 +43,7 @@
 * update fence heights and building sizes
 
 * environment
+	* train tracks ramp up or down, with signs
 	* less monotonously horizontal layouts
 	* sections where you can't go up
 	* ladders
@@ -57,6 +58,8 @@
 			* "For real railroad... food"
 			* bags of food hang on poles over the tracks to be picked up by passing cars
 			* can be used as the background for the title screen
+		* noodle shop you can stop and eat at, takes like 30 seconds and gives you an ACHIEVEMENT if you beat the game having taken time to eat lunch, possibly the only achievement in the game, or maybe it gives you special golden augments (noodle colored)
+
 	* visual
 		* neon signs
 		* wanted/warning signs
@@ -71,6 +74,8 @@
 
 * cars stop at some buildings
 	* traffic ensues; can help to make the game easier
+	* ramp down into train yard
+	* possibly giant crane moves train cars
 
 * trains
 	* alerts when coming from offscreen
@@ -91,6 +96,7 @@
 	* wheel sparks (visual)
 	* military transport
 		* missile car (visual only... unless blown up? :boom:)
+
 
 * something that forces you down
 	* like chutes and ladders! LOL
