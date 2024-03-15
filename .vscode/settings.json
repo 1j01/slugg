@@ -1,3 +1,10 @@
 {
+	// Formatting
+	"editor.detectIndentation": false,
+	"editor.insertSpaces": false,
+	"markdown.extension.list.indentationSize": "inherit",
+	"files.insertFinalNewline": true,
+	// "editor.formatOnSave": true,
+	// Theme
 	"workbench.colorTheme": "radium"
 }
