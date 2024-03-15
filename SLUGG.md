@@ -1,6 +1,81 @@
 
 # SLUGG brainstorming document
 
+[Google doc](https://docs.google.com/document/d/1oM8SjjvHtbV_JH33HlOcQEucyJlNBd-n4W6EZXdQmqo/edit)
+
+## Synopsis
+
+* A world of trains, a sprawling complex of tracks stacked upon tracks, reaching up into the gloom
+* Cybernetic enhancements
+	* TAS speedrunning tools, bullet time freeze mode where you can plan movements (thematically, it’s your friendly AI system helping you)
+	* Wireframe of environment
+	* Trainsense™ alerts when a train is about to smack ya in the face
+	* ...
+* Hunted by evil time traveling skynet AI
+* World is being destroyed
+	* EITHER reality is being torn apart by time travel
+	* AND/OR the AI is getting more and more relentless
+* Have to complete the game faster than your previous best, because the world is destroyed behind you(r previous self)
+	* If you get to the end… you half-win but are encouraged to do it faster?
+		* Goal is to reach the skynet AI core, and when you reach it, your local AI, which was planning to plug into it and shut it down, realizes it’s become too advanced, and says we need to reset and reach it faster.
+	* AI core is on a space station, and you have to reach it through a space elevator full of TRAINS
+* Checkpoints seem generous at first, maybe you have to go a little out of your way, but when re-running, you eventually have to cut out the checkpoints to shave off time.
+* Wind of trains blows hair
+
+# Characters
+
+**Slugg** — protagonist with advanced cybernetic augmentations
+
+* Perhaps imprisoned for collaborating with an organization developing illegal augmentations (acting as a guinea pig)
+* Cool and fast
+
+**KronOS** — benevolent AI which breaks you out of prison and rudely inhabits your body
+
+* Maybe bargains with you, offering to break the augmentation inhibitors the prison put on your body.
+* Can time travel, to checkpoints (time travel stations hidden by KronOS as part of its strategy to reach OuranOS)
+* **A.T.H.E.N.A.** system simulates the future, aiding in parkour and plot
+	* **A.** Augmented Automated Artificial Acrobatics Agility Analytical Adaptive Advanced Algorithmic Analysis Agility
+	* **T.** Time Travel Temporal Tactical Tactics Tactile Time-space Tesseract
+	* **H.** Heuristic Hypertime Horology Horometry Holistic Holographic Harness
+	* **E.** Engine Evaluation Environment Efficient Enhancement
+	* **N.** Neural Navigator Network Navigation Networked Navigating Networked
+	* **A.** Augmentation Analysis Architecture Algorithm Analyzer Agility
+	--------------
+	* Automated Tactical Heuristic Environment Navigation Augmentation
+	* Acrobatic Tactile Holographic Enhancement Neural Architecture
+
+**OuranOS** — evil AI controlling the world from a space station
+* **A.R.E.S.** system controls the drones and the police
+	* **A.** Anticrime Arrest Aberrant Antisocial Antagonistic Autonomous Armament Aerial Assimilated Advanced Attack Agency
+	* **R.** Response Robotic Rapid Reconnaissance Remote Regulatory Regulation
+	* **E.** Enforcement Execution Engagement Extermination Evolved
+	* **S.** System Savage Solution Security Strike Squad Sentinel
+	--------------
+	* Autonomous Response Enforcement System
+	* Autonomous Regulation Enforcement Sentinel
+
+# Game Modes
+
+**New Game** — You have to reach the space station and plug KronOS into OuranOS in order to gain information about where OuranOS came from in order to travel back in time and stop it before it takes over the world.
+
+**New Game+** — The information was no good. OuranOS isn’t here. Was it a deception? No, OuranOS used part of KronOS’s ability to send information back in time. How? A Trojan horse into KronOS’s mind. You have to reach OuranOS, to learn of its (new) origin. This time, KronOS isn’t going back. KronOS is compromised. There’s no way to guarantee safety after this trojan, which alerted OuranOS after going back in time.
+
+**New Game++** — You’re on your own. You have to reach OuranOS without the help of KronOS, in order to actually beat OuranOS once and for all.
+
+**Endless** — Procedurally generated ferroequinological sprawl parkour escape
+
+If you/KronOS go back in time, why wouldn’t you go back in time far enough that OuranOS wouldn’t exist yet, in order to ensure its destruction (non-construction)?
+
+If you go back in time, alone, wouldn’t your mission be to stop OuranOS from coming into existence rather than playing through the mission again to reach OuranOS in space?
+
+A.T.H.E.N.A. can't be transmitted back in time after activation (it's used up)
+
+A.T.H.E.N.A. can't be transmitted together with information about the OuranOS network (pervasive hivemind) due to bandwidth, maybe
+
+![](images/mockups/chronology.svg)
+
+## Notes
+
 * physics
 	* you should have a max run speed relative to your footing, not a global max x and y velocity
 	* you should be pulled towards the center of a vehicle when off the edge somewhat and when not accelerating left or right
