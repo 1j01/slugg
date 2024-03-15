@@ -1,62 +1,71 @@
 <!doctype html>
 <html>
+
 <head>
-<title>SLUGG</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>SLUGG</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
+
 <body>
-<script>~function(){var d=document,b=d.body,c=b.appendChild(d.createElement("canvas")),p,i,k
-canvas=c;ctx=c.getContext("2d")
-b.style.overflow="hidden";b.style.margin=0;(onresize=function(){c.width=innerWidth,c.height=innerHeight})()
-animate=function a(f){f(),requestAnimationFrame(function(){a(f)})}
-for(p=Object.getOwnPropertyNames(Math),i=0;k=p[i];i++){self[k]=Math[k]}TAU=PI*2}()</script>
-<script src="lib/coffee-script.js"></script>
-<script src="animation-data.js"></script>
-<script src="src/asset-loading.coffee" type="text/coffeescript"></script>
-<script src="src/World.coffee" type="text/coffeescript"></script>
-<script src="src/Entity.coffee" type="text/coffeescript"></script>
-<script src="src/Building.coffee" type="text/coffeescript"></script>
-<script src="src/Platform.coffee" type="text/coffeescript"></script>
-<script src="src/Pathway.coffee" type="text/coffeescript"></script>
-<script src="src/Roadway.coffee" type="text/coffeescript"></script>
-<script src="src/MobileEntity.coffee" type="text/coffeescript"></script>
-<script src="src/Vehicle.coffee" type="text/coffeescript"></script>
-<script src="src/Animator.coffee" type="text/coffeescript"></script>
-<script src="src/Character.coffee" type="text/coffeescript"></script>
-<script src="src/NPC.coffee" type="text/coffeescript"></script>
-<script src="src/Player.coffee" type="text/coffeescript"></script>
-<script src="src/KeyboardController.coffee" type="text/coffeescript"></script>
-<script src="src/main.coffee" type="text/coffeescript"></script>
-<style>
-	/*canvas {
-		transition: filter 0.2s;
-		transition: -webkit-filter 0.2s;
-	}*/
-	.paused canvas {
-		filter: blur(5px);
-		-webkit-filter: blur(5px);
-	}
-	.paused {
-		display: table-block;
-	}
-	.paused::after {
-		content: "PAUSED";
-		font-family: sans-serif;
-		font-size: 3.5em;
-		text-align: center;
-		line-height: 100%;
-		pointer-events: none;
-		position: absolute;
-		left: 0;
-		right: 0;
-		top: 50%;
-		transform: translate(0, -50%);
-		color: white;
-		text-shadow: .09em .09em 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000;
-		opacity: 0.5;
-	}
-	body {
-		background: #222;
-	}
-</style>
+	<script>
+		~function () {
+			var d = document, b = d.body, c = b.appendChild(d.createElement("canvas")), p, i, k
+			canvas = c; ctx = c.getContext("2d")
+			b.style.overflow = "hidden"; b.style.margin = 0; (onresize = function () { c.width = innerWidth, c.height = innerHeight })()
+			animate = function a(f) { f(), requestAnimationFrame(function () { a(f) }) }
+			for (p = Object.getOwnPropertyNames(Math), i = 0; k = p[i]; i++) { self[k] = Math[k] } TAU = PI * 2
+		}()
+	</script>
+	<script src="lib/coffee-script.js"></script>
+	<script src="animation-data.js"></script>
+	<script src="src/asset-loading.coffee" type="text/coffeescript"></script>
+	<script src="src/World.coffee" type="text/coffeescript"></script>
+	<script src="src/Entity.coffee" type="text/coffeescript"></script>
+	<script src="src/Building.coffee" type="text/coffeescript"></script>
+	<script src="src/Platform.coffee" type="text/coffeescript"></script>
+	<script src="src/Pathway.coffee" type="text/coffeescript"></script>
+	<script src="src/Roadway.coffee" type="text/coffeescript"></script>
+	<script src="src/MobileEntity.coffee" type="text/coffeescript"></script>
+	<script src="src/Vehicle.coffee" type="text/coffeescript"></script>
+	<script src="src/Animator.coffee" type="text/coffeescript"></script>
+	<script src="src/Character.coffee" type="text/coffeescript"></script>
+	<script src="src/NPC.coffee" type="text/coffeescript"></script>
+	<script src="src/Player.coffee" type="text/coffeescript"></script>
+	<script src="src/KeyboardController.coffee" type="text/coffeescript"></script>
+	<script src="src/main.coffee" type="text/coffeescript"></script>
+	<style>
+		/*canvas {
+			transition: filter 0.2s;
+			transition: -webkit-filter 0.2s;
+		}*/
+		.paused canvas {
+			filter: blur(5px);
+			-webkit-filter: blur(5px);
+		}
+
+		.paused {
+			display: table-block;
+		}
+
+		.paused::after {
+			content: "PAUSED";
+			font-family: sans-serif;
+			font-size: 3.5em;
+			text-align: center;
+			line-height: 100%;
+			pointer-events: none;
+			position: absolute;
+			left: 0;
+			right: 0;
+			top: 50%;
+			transform: translate(0, -50%);
+			color: white;
+			text-shadow: .09em .09em 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000;
+			opacity: 0.5;
+		}
+
+		body {
+			background: #222;
+		}
+	</style>
 </body>
