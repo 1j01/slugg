@@ -9,11 +9,20 @@
 <body>
 	<script>
 		~function () {
-			var d = document, b = d.body, c = b.appendChild(d.createElement("canvas")), p, i, k
-			canvas = c; ctx = c.getContext("2d")
-			b.style.overflow = "hidden"; b.style.margin = 0; (onresize = function () { c.width = innerWidth, c.height = innerHeight })()
-			animate = function a(f) { f(), requestAnimationFrame(function () { a(f) }) }
-			for (p = Object.getOwnPropertyNames(Math), i = 0; k = p[i]; i++) { self[k] = Math[k] } TAU = PI * 2
+			canvas = document.body.appendChild(document.createElement("canvas"))
+			ctx = canvas.getContext("2d")
+			(onresize = function () {
+				canvas.width = innerWidth
+				canvas.height = innerHeight 
+			})()
+			function animate(f) {
+				f()
+				requestAnimationFrame(function () { animate(f) }) 
+			}
+			for (var props = Object.getOwnPropertyNames(Math), i = 0, key; key = props[i]; i++) { 
+				self[key] = Math[key] 
+			}
+			TAU = PI * 2
 		}()
 	</script>
 	<script src="lib/coffee-script.js"></script>
@@ -66,6 +75,8 @@
 
 		body {
 			background: #222;
+			margin: 0;
+			overflow: hidden;
 		}
 	</style>
 </body>
